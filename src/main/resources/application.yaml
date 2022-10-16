@@ -5,10 +5,17 @@ spring:
         username: trybe
         password: 12345678
         url: jdbc:mysql://localhost:3306/dronefeeder
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        open-in-view: false
+        #https://ia-tec-development.medium.com/lombok-e-spring-data-jpa-142398897733
     security.user:
         name: dronefeeder
         password: dronefeeder
         #https://www.baeldung.com/spring-boot-security-autoconfiguration
+
 
 resilience4j.circuitbreaker:
   configs:
