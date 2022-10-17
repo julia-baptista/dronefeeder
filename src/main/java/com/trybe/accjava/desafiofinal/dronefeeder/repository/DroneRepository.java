@@ -11,4 +11,6 @@ import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 @Repository
 public interface DroneRepository extends JpaRepository<Drone, Long> {
 
+  boolean existsByNome(String nome);
+
 }
