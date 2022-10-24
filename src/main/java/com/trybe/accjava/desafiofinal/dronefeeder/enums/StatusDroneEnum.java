@@ -2,7 +2,7 @@ package com.trybe.accjava.desafiofinal.dronefeeder.enums;
 
 public enum StatusDroneEnum {
 
-  ATIVO("A"), INATIVO("I");
+  ATIVO("Ativo"), INATIVO("Inativo");
 
   private String status;
 
