@@ -57,6 +57,19 @@ public class Drone {
     this.status = status;
   }
 
+  public Drone(String nome, String marca, String fabricante, Double altitudeMax,
+      Integer duracaoBateria, Double capacidadeKg, Double capacidadeM3, StatusDroneEnum status) {
+    super();
+    this.nome = nome;
+    this.marca = marca;
+    this.fabricante = fabricante;
+    this.altitudeMax = altitudeMax;
+    this.duracaoBateria = duracaoBateria;
+    this.capacidadeKg = capacidadeKg;
+    this.capacidadeM3 = capacidadeM3;
+    this.status = status;
+  }
+
   public Long getId() {
     return id;
   }
