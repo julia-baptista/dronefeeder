@@ -1,5 +1,6 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDTO;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
@@ -45,17 +46,23 @@ public class DroneService {
   }
 
   private DroneDTO convertDroneToDroneDTO(Drone drone) {
-    return DroneDTO
-      .builder()
-      .id(drone.getId())
-      .nome(drone.getNome())
-      .marca(drone.getMarca())
-      .fabricante(drone.getFabricante())
-      .altitudeMax(drone.getAltitudeMax())
-      .duracaoBateria(drone.getDuracaoBateria())
-      .capacidadeKg(drone.getCapacidadeKg())
-      .capacidadeM3(drone.getCapacidadeM3())
-      .status(drone.getStatus().getStatus())
-      .build();
+    return DroneDTO.builder().id(drone.getId()).nome(drone.getNome()).marca(drone.getMarca())
+        .fabricante(drone.getFabricante()).altitudeMax(drone.getAltitudeMax())
+        .duracaoBateria(drone.getDuracaoBateria()).capacidadeKg(drone.getCapacidadeKg())
+        .capacidadeM3(drone.getCapacidadeM3()).status(drone.getStatus().getStatus()).build();
+  }
+
+  /**
+   * Método listarSeries.
+   */
+  public List<Drone> listar() {
+
+    try {
+      return droneRepository.findAll();
+
+    } catch (Exception e) {
+      throw new ErroInesperadoException();
     }
+
+  }
 }
