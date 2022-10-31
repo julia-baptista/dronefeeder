@@ -2,10 +2,11 @@ version: '3.8'
 
 services:
   mysqldb:
-    image: mysql:5.7
+    image: mysql
     platform: linux/x86_64
-    restart: unless-stopped
+    restart: always
     environment:
+      - MYSQL_USER=trybe
       - MYSQL_ROOT_PASSWORD=12345678
       - MYSQL_DATABASE=dronefeederdb
     ports:
@@ -13,10 +14,8 @@ services:
     volumes:
       - db:/var/lib/mysql
   app:
-    depends_on:
-      - mysqldb
     build: .
-    restart: unless-stopped
+    restart: always
     ports:
       - 8080:8080
     environment:
