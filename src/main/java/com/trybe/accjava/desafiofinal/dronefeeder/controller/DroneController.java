@@ -47,9 +47,9 @@ public class DroneController {
   // Delete example
   // https://tedblob.com/deletemapping-spring-boot-example/
   @DeleteMapping(value = "/{id}")
-  public ResponseEntity<Long> deletarDrone(@PathVariable("id") Long id) {
+  public ResponseEntity<Void> deletarDrone(@PathVariable("id") Long id) {
     this.service.deletar(id);
-    return ResponseEntity.ok(id);
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
   }
 
   // Como validar os campos do payload
