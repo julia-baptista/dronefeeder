@@ -24,6 +24,8 @@ services:
       - DB_PASSWORD=12345678
       - DB_NAME=dronefeederdb
       - DB_PORT=3306
+    depends_on:
+     - mysqldb
     stdin_open: true
     tty: true
 
