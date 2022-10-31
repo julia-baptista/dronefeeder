@@ -77,20 +77,14 @@ class PedidoTest {
     pedido.setVolumeM3(1.00);
     assertEquals(1.00, pedido.getVolumeM3());
 
-    pedido.setLatitudeDestino(100);
-    assertEquals(100, pedido.getLatitudeDestino());
+    pedido.setLatitude(100);
+    assertEquals(100, pedido.getLatitude());
 
-    pedido.setLatitudeAtual(200);
-    assertEquals(200, pedido.getLatitudeAtual());
-
-    pedido.setLongitudeDestino(300);
-    assertEquals(300, pedido.getLongitudeDestino());
-
-    pedido.setLongitudeAtual(400);
-    assertEquals(400, pedido.getLongitudeAtual());
+    pedido.setLongitude(300);
+    assertEquals(300, pedido.getLongitude());
 
     pedido.setVideo(video);
-    assertEquals(video, pedido.getVideo());    
+    assertEquals(video, pedido.getVideo());
 
     pedido.setStatus(StatusPedidoEnum.AB);
     assertEquals(StatusPedidoEnum.AB, pedido.getStatus());
