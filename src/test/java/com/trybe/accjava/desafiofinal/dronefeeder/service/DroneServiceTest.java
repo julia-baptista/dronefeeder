@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDTO;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
@@ -24,13 +24,13 @@ public class DroneServiceTest {
   @InjectMocks
   private DroneService service;
 
-  DroneDTO dto = new DroneDTO();
+  DroneDto dto = new DroneDto();
 
   Drone drone = new Drone();
 
   @BeforeEach
   public void setup() {
-    dto = DroneDTO.builder().id(1L).nome("Drone A").fabricante("Drone Technology").build();
+    dto = DroneDto.builder().id(1L).nome("Drone A").fabricante("Drone Technology").build();
 
     drone.setId(1L);
     drone.setNome("Drone A");
@@ -45,7 +45,7 @@ public class DroneServiceTest {
     Mockito.when(repository.existsByNome(Mockito.anyString())).thenReturn(false);
     Mockito.when(repository.save(Mockito.any())).thenReturn(drone);
 
-    DroneDTO result = service.cadastrar(dto);
+    DroneDto result = service.cadastrar(dto);
 
     Assertions.assertNotNull(result);
     Assertions.assertEquals("Drone A", result.getNome());

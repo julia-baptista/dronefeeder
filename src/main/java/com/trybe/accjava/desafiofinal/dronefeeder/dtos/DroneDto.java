@@ -1,8 +1,7 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.dtos;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,26 +15,31 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DroneDTO {
+public class DroneDto {
 
   private Long id;
 
+  @NotBlank(message = "Nome é obrigatório")
   private String nome;
 
+  @NotBlank(message = "Marca é obrigatória")
   private String marca;
 
+  @NotBlank(message = "Fabricante é obrigatório")
   private String fabricante;
 
+  @NotNull(message = "Altitute Máxima é obrigatória")
   private Double altitudeMax;
 
+  @NotNull(message = "Duração da bateria é obrigatória")
   private Integer duracaoBateria;
 
+  @NotNull(message = "Capacidade em KG é obrigatória")
   private Double capacidadeKg;
 
+  @NotNull(message = "Capacidade em M3 é obrigatória")
   private Double capacidadeM3;
 
   private String status;
-
-  private List<Pedido> pedidos = new ArrayList<>();
 
 }
