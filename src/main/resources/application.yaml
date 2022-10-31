@@ -4,7 +4,7 @@ spring:
     datasource:
         username: ${DB_USER}
         password: ${DB_PASSWORD}
-        url: jdbc:mysql://localhost:3306/dronefeederdb
+        url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${MYSQL_DATABASE}
     jpa:
         hibernate:
             ddl-auto: update
