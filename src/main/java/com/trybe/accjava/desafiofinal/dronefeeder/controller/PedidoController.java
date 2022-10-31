@@ -1,6 +1,7 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +26,7 @@ public class PedidoController {
   }
 
   @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<PedidoDto> cadastrarPedido(@RequestBody PedidoDto dto) {
+  public ResponseEntity<PedidoDto> cadastrarPedido(@RequestBody @Valid PedidoDto dto) {
     PedidoDto novoPedido = pedidoService.cadastrar(dto);
     return ResponseEntity.ok(novoPedido);
   }

@@ -38,6 +38,9 @@ public class PedidoService {
       if (!drone.isPresent()) {
         throw new DroneNaoEncontradoException();
       }
+
+
+
       Pedido novoPedido = converterPedidoDtoParaPedido(dto);
       novoPedido.setDrone(drone.get());
 

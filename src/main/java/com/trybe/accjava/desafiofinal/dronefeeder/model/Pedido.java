@@ -26,6 +26,7 @@ public class Pedido {
   private Integer duracaoDoPercurso;
   private LocalDateTime dataProgramadaDaSaida;
   private LocalDateTime dataConfirmacaoEntrega;
+  private String enderecoDeEntrega;
 
   @Enumerated(EnumType.STRING)
   private StatusPedidoEnum status;
