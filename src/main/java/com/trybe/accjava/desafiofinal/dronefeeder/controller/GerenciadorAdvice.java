@@ -1,12 +1,18 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DataError;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoNaoEncontradoException;
 
 /**
  * Classe GerenciadorAdvice.
@@ -39,6 +45,27 @@ public class GerenciadorAdvice {
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(payload);
 
+  }
+
+  @ExceptionHandler({DroneNaoEncontradoException.class, PedidoNaoEncontradoException.class})
+  public ResponseEntity<DataError> handle(RuntimeException e) {
+
+    DataError payload = new DataError(e.getMessage());
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(payload);
+  }
+
+  // @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, String>> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult().getAllErrors().forEach((error) -> {
+      String fieldName = ((FieldError) error).getField();
+      String errorMessage = error.getDefaultMessage();
+      errors.put(fieldName, errorMessage);
+    });
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
 }
