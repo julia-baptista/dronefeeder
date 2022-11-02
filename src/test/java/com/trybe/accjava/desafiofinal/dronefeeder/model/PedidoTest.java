@@ -53,7 +53,7 @@ class PedidoTest {
     pedido.setDataEntregaProgramada(LocalDateTime.parse("2023-01-30T12:00:00"));
     assertEquals(LocalDateTime.parse("2023-01-30T12:00:00"), pedido.getDataEntregaProgramada());
 
-    pedido.setDuracaoDoPercurso(1);
+    pedido.setDuracaoDoPercurso(1L);
     assertEquals(1, pedido.getDuracaoDoPercurso());
 
     pedido.setDataProgramadaDaSaida(LocalDateTime.parse("2023-01-25T12:00:00"));
