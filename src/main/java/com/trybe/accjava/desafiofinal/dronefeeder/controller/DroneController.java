@@ -19,7 +19,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 
 // https://spring.io/guides/tutorials/rest/
 @RestController
-@RequestMapping("/drone")
+@RequestMapping("v1/drone")
 public class DroneController {
 
   private DroneService service;
@@ -38,9 +38,9 @@ public class DroneController {
     return ResponseEntity.ok(novoDrone);
   }
 
-  @GetMapping
-  public ResponseEntity<List<Drone>> listarDrones() {
-    List<Drone> lista = service.listar();
+  @GetMapping(produces = {"application/json"})
+  public ResponseEntity<List<DroneDto>> listarDrones() {
+    List<DroneDto> lista = service.listar();
     return ResponseEntity.ok(lista);
   }
 
@@ -54,7 +54,7 @@ public class DroneController {
 
   // Como validar os campos do payload
   // https://www.baeldung.com/spring-boot-bean-validation
-  @PutMapping(value = "/{id}")
+  @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
   public ResponseEntity<DroneDto> alterarDrone(@PathVariable("id") Long id,
       @RequestBody @Valid DroneDto dto) {
     DroneDto drone = this.service.alterar(id, dto);
