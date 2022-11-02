@@ -1,5 +1,6 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -57,11 +58,17 @@ public class DroneService {
   /**
    * Listar.
    */
-  public List<Drone> listar() {
+  public List<DroneDto> listar() {
 
     try {
-      return droneRepository.findAll();
+      List<DroneDto> dronesDto = new ArrayList<DroneDto>();
+      List<Drone> drones = droneRepository.findAll();
 
+      drones.stream().forEach(drone -> {
+        dronesDto.add(converterDroneParaDroneDto(drone));
+      });
+
+      return dronesDto;
     } catch (Exception e) {
       throw new ErroInesperadoException();
     }
@@ -153,8 +160,6 @@ public class DroneService {
     }
 
   }
-
-
 
 }
 
