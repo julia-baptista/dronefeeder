@@ -2,6 +2,10 @@ package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,10 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 
 // https://spring.io/guides/tutorials/rest/
 @RestController
@@ -67,7 +67,8 @@ public class DroneController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
   }
 
-  @PutMapping(value = "/inativar/{id}")
+  // Troca o nome de inativar para desativar.
+  @PutMapping(value = "/desativar/{id}")
   public ResponseEntity<Void> inativarDrone(@PathVariable("id") Long id) {
     this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);

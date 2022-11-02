@@ -2,8 +2,8 @@ server:
   port: 8080
 spring:
     datasource:
-        username: trybe
-        password: 12345678
+        username: root
+        password: M0urinh4
         url: jdbc:mysql://localhost:3306/dronefeeder
     jpa:
         hibernate:
