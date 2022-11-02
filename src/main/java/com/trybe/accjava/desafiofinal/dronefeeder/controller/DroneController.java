@@ -7,6 +7,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,8 @@ public class DroneController {
   // https://www.baeldung.com/spring-415-unsupported-mediatype#:~:text=The%20415%20(Unsupported%20Media%20Type,t%20supported%20by%20the%20API.
   // Como validar os campos do payload
   // https://www.baeldung.com/spring-boot-bean-validation
-  @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
+  @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<DroneDto> cadastrarDrone(@RequestBody @Valid DroneDto dto) {
     DroneDto novoDrone = service.cadastrar(dto);
     return ResponseEntity.ok(novoDrone);
