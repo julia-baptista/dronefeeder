@@ -3,7 +3,6 @@ package com.trybe.accjava.desafiofinal.dronefeeder.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
@@ -11,6 +10,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoEx
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DroneService {
