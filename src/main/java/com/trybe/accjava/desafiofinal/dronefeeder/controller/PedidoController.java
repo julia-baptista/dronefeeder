@@ -84,6 +84,13 @@ public class PedidoController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
   }
 
+  @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
+  public ResponseEntity<PedidoDto> alterarPedido(@PathVariable("id") Long id,
+      @RequestBody @Valid PedidoDto dto) {
+    PedidoDto pedido = this.pedidoService.alterar(id, dto);
+    return ResponseEntity.ok(pedido);
+  }
+
   @ApiOperation(value = "Operação responsável por cancelar um pedido.", notes = "Cancelar pedido")
   @ApiResponses(value = {@ApiResponse(code = 202, message = "Pedido removido com sucesso"),
       @ApiResponse(code = 401, message = "Não autorizado"),

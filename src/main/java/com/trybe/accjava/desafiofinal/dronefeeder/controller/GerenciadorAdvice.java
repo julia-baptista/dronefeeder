@@ -17,6 +17,9 @@ import com.trybe.accjava.desafiofinal.dronefeeder.exception.PesoExcedidoExceptio
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.VolumeExcedidoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.HorarioDoPedidoSobrepostoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoCanceladoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAndamentoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEntregueException;
 
 /**
  * Classe GerenciadorAdvice.
@@ -30,7 +33,8 @@ public class GerenciadorAdvice {
    **/
   @ExceptionHandler({DroneExistenteException.class, PesoExcedidoException.class,
       VolumeExcedidoException.class, HorarioDoPedidoSobrepostoException.class,
-      DroneInativoException.class})
+      DroneInativoException.class, PedidoCanceladoException.class, PedidoEmAndamentoException.class,
+      PedidoEntregueException.class})
   public ResponseEntity<DataError> handlerConflict(RuntimeException e) {
     // public ResponseEntity<Map<String,String>>
 
