@@ -57,13 +57,6 @@ class DronefeederApplicationTests {
   @DisplayName("1 - Deve cadastrar um novo Drone na base de dados.")
   void cadastrarDroneTest() throws Exception {
 
-    // mockMvc
-    // .perform(post("/v1/drone").contentType(MediaType.APPLICATION_JSON)
-    // .content(new ObjectMapper().writeValueAsString("dummy")))
-    // .andExpect(status().isInternalServerError())
-    // .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-    // .andExpect(jsonPath("$.error").value("Erro inesperado"));
-
     DroneDto newDroneDto = DroneDto.builder().nome("Drone 01").marca("Drone&Cia")
         .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
@@ -86,15 +79,25 @@ class DronefeederApplicationTests {
     assertThat(droneCaptor.getValue().getCapacidadeM3()).isNotNull();
     assertThat(droneCaptor.getValue().getStatus()).isNotNull();
 
+    DroneDto newDroneDto2 = DroneDto.builder().nome(null).marca(null).fabricante(null)
+        .altitudeMax(null).duracaoBateria(null).capacidadeKg(null).capacidadeM3(null).build();
+
+    mockMvc
+        .perform(post("/v1/drone").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDroneDto2)))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.error").value("Erro inesperado"));
+
   }
 
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(2)
-  @DisplayName("2 - Deve utilizar @ControllerAdvice em controller para informar que o Drone com determinado nome já existe na base de dados.")
+  @DisplayName("2 - Deve utilizar @ControllerAdvice para lançar erro quando já houver drone cadastrado com determinado nome.")
   void cadastraDroneJaExistenteTest() throws Exception {
 
-    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+    Drone newDrone = new Drone("Drone 02", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
         StatusDroneEnum.ATIVO);
     droneRepository.save(newDrone);
 
@@ -155,7 +158,7 @@ class DronefeederApplicationTests {
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(6)
-  @DisplayName("6 - Deve utilizar @ControllerAdvice em controller para informar que o Drone com determinado id não existe na base de dados.")
+  @DisplayName("6 - Deve utilizar @ControllerAdvice em controller para informar que o Drone comdeterminado idnão existena base de dados.")
   void removeDroneComIdNaoExistenteNoBancoTest() throws Exception {
 
     Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
@@ -225,6 +228,22 @@ class DronefeederApplicationTests {
     Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
         StatusDroneEnum.ATIVO);
     droneRepository.save(newDrone);
+
+    mockMvc
+        .perform(put("/v1/drone/inativar/" + (newDrone.getId() + 1))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDrone)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+
+    mockMvc
+        .perform(put("/v1/drone/ativar/" + (newDrone.getId() + 1))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDrone)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
 
     mockMvc
         .perform(
