@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
@@ -156,9 +155,8 @@ public class DroneService {
   /**
    * Ativar e Desativar o Drone.
    */
-  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
   @Transactional
-  public void alterarStatus(Long id, StatusDroneEnum status) {
+  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
 
