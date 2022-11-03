@@ -9,10 +9,15 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.HorarioDoPedidoSobrepostoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoCanceladoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAndamentoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEntregueException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.PesoExcedidoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.VolumeExcedidoException;
@@ -53,6 +58,10 @@ public class PedidoService {
         throw new DroneNaoEncontradoException();
       }
 
+      if (drone.get().getStatus().equals(StatusDroneEnum.INATIVO)) {
+        throw new DroneInativoException();
+      }
+
       if (dto.getPesoKg() > drone.get().getCapacidadeKg()) {
         throw new PesoExcedidoException();
       }
@@ -60,10 +69,6 @@ public class PedidoService {
       if (dto.getVolumeM3() > drone.get().getCapacidadeM3()) {
         throw new VolumeExcedidoException();
       }
-
-      // dataEntregaProgramada
-      // duracaoDoPercurso
-      // dataProgramadaDaSaida
 
       LocalDateTime dataEntregaProgramada =
           DataUtil.converteStringParaData(dto.getDataEntregaProgramada());
@@ -94,6 +99,10 @@ public class PedidoService {
         throw (DroneNaoEncontradoException) e;
       }
 
+      if (e instanceof DroneInativoException) {
+        throw (DroneInativoException) e;
+      }
+
       if (e instanceof PesoExcedidoException) {
         throw (PesoExcedidoException) e;
       }
@@ -120,7 +129,6 @@ public class PedidoService {
         dto.getLongitude(), null);
     return pedido;
   }
-
 
 
   private PedidoDto converterPedidoParaPedidoDto(Pedido pedido) {
@@ -191,6 +199,109 @@ public class PedidoService {
       throw new ErroInesperadoException();
     }
 
+  }
+
+  /**
+   * Alterar o Pedido.
+   */
+  @Transactional
+  public PedidoDto alterar(Long id, PedidoDto dto) {
+    try {
+
+      Optional<Pedido> pedido = this.pedidoRepository.findById(id);
+
+      if (!pedido.isPresent()) {
+        throw new PedidoNaoEncontradoException();
+      }
+
+      if (pedido.get().getStatus().equals(StatusPedidoEnum.CA)) {
+        throw new PedidoCanceladoException();
+      }
+
+      if (pedido.get().getStatus().equals(StatusPedidoEnum.EA)
+          || pedido.get().getStatus().equals(StatusPedidoEnum.AT)) {
+        throw new PedidoEmAndamentoException();
+      }
+
+      if (pedido.get().getStatus().equals(StatusPedidoEnum.EN)) {
+        throw new PedidoEntregueException();
+      }
+
+      Optional<Drone> drone = droneRepository.findById(dto.getDroneId());
+
+      if (drone.get().getStatus().equals(StatusDroneEnum.INATIVO)) {
+        throw new DroneInativoException();
+      }
+
+      if (dto.getPesoKg() > drone.get().getCapacidadeKg()) {
+        throw new PesoExcedidoException();
+      }
+
+      if (dto.getVolumeM3() > drone.get().getCapacidadeM3()) {
+        throw new VolumeExcedidoException();
+      }
+
+      LocalDateTime dataEntregaProgramada =
+          DataUtil.converteStringParaData(dto.getDataEntregaProgramada());
+
+      LocalDateTime dataProgramadaDaSaida =
+          DataUtil.geraDataSaidaProgramada(dto.getDuracaoDoPercurso(), dataEntregaProgramada);
+
+      boolean isDataHoraProgramaSobreposta =
+          drone.get().getPedidos().stream().filter(p -> !p.getId().equals(id))
+              .anyMatch(p -> DataUtil.isDataHoraPedidoSobreposta(p.getDataProgramadaDaSaida(),
+                  p.getDataEntregaProgramada(), dataProgramadaDaSaida, dataEntregaProgramada));
+
+      if (isDataHoraProgramaSobreposta) {
+        throw new HorarioDoPedidoSobrepostoException();
+      }
+
+      Pedido novoPedido =
+          converterPedidoDtoParaPedido(dto, dataEntregaProgramada, dataProgramadaDaSaida);
+      novoPedido.setDrone(drone.get());
+
+      novoPedido.setId(id);
+
+      Pedido pedidoCadastrado = this.pedidoRepository.save(novoPedido);
+
+      return converterPedidoParaPedidoDto(pedidoCadastrado);
+
+
+    } catch (Exception e) {
+      if (e instanceof PedidoNaoEncontradoException) {
+        throw (PedidoNaoEncontradoException) e;
+      }
+
+      if (e instanceof PedidoCanceladoException) {
+        throw (PedidoCanceladoException) e;
+      }
+
+      if (e instanceof PedidoEmAndamentoException) {
+        throw (PedidoEmAndamentoException) e;
+      }
+
+      if (e instanceof PedidoEntregueException) {
+        throw (PedidoEntregueException) e;
+      }
+
+      if (e instanceof DroneInativoException) {
+        throw (DroneInativoException) e;
+      }
+
+      if (e instanceof PesoExcedidoException) {
+        throw (PesoExcedidoException) e;
+      }
+
+      if (e instanceof VolumeExcedidoException) {
+        throw (VolumeExcedidoException) e;
+      }
+
+      if (e instanceof HorarioDoPedidoSobrepostoException) {
+        throw (HorarioDoPedidoSobrepostoException) e;
+      }
+
+      throw new ErroInesperadoException();
+    }
   }
 
   /**
