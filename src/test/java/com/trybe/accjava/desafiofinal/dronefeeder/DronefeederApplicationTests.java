@@ -1,8 +1,10 @@
 package com.trybe.accjava.desafiofinal.dronefeeder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -111,5 +113,28 @@ class DronefeederApplicationTests {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].nome").value(newDrone.getNome()))
         .andExpect(jsonPath("$[1].nome").value(newDrone2.getNome()));
+
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(4)
+  @DisplayName("4 - Deve retornar lista vazia quando não existir séries na base de dados.")
+  void retornaListaVaziaQuandoNaoExistemDronesNoBancoTest() throws Exception {
+    mockMvc.perform(get("/v1/drone").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        .andExpect(content().string(containsString("[]")));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(5)
+  @DisplayName("5 - Deve remover Drone, por um id existente informado.")
+  void removeDronePorIdTest() throws Exception {
+    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    droneRepository.save(newDrone);
+
+    mockMvc.perform(delete("/v1/drone/" + newDrone.getId())).andExpect(status().isAccepted());
   }
 }
