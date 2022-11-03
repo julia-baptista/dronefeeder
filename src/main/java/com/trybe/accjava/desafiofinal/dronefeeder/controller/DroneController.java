@@ -2,6 +2,9 @@ package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
 import java.util.List;
 import javax.validation.Valid;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,10 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 
 // https://spring.io/guides/tutorials/rest/
 @RestController
@@ -62,15 +61,15 @@ public class DroneController {
   }
 
   @PutMapping(value = "/ativar/{id}")
-  public ResponseEntity<Void> ativarDrone(@PathVariable("id") Long id) {
-    this.service.alterarStatus(id, StatusDroneEnum.ATIVO);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+  public ResponseEntity<DroneDto> ativarDrone(@PathVariable("id") Long id) {
+    DroneDto drone = this.service.alterarStatus(id, StatusDroneEnum.ATIVO);
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(drone);
   }
 
   @PutMapping(value = "/inativar/{id}")
-  public ResponseEntity<Void> inativarDrone(@PathVariable("id") Long id) {
-    this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+  public ResponseEntity<DroneDto> inativarDrone(@PathVariable("id") Long id) {
+    DroneDto drone = this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(drone);
   }
 
 }

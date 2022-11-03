@@ -17,6 +17,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAbertoExcept
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DroneService {
@@ -155,6 +156,7 @@ public class DroneService {
   /**
    * Ativar e Desativar o Drone.
    */
+  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
   @Transactional
   public void alterarStatus(Long id, StatusDroneEnum status) {
 
@@ -183,6 +185,7 @@ public class DroneService {
 
       this.droneRepository.save(drone.get());
 
+      return converterDroneParaDroneDto(drone.get());
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
