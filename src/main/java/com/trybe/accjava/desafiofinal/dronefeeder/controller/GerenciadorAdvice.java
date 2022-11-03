@@ -16,6 +16,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoNaoEncontradoE
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.PesoExcedidoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.VolumeExcedidoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.HorarioDoPedidoSobrepostoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
 
 /**
  * Classe GerenciadorAdvice.
@@ -28,7 +29,8 @@ public class GerenciadorAdvice {
    * Metodo handlerConflict.
    **/
   @ExceptionHandler({DroneExistenteException.class, PesoExcedidoException.class,
-      VolumeExcedidoException.class, HorarioDoPedidoSobrepostoException.class})
+      VolumeExcedidoException.class, HorarioDoPedidoSobrepostoException.class,
+      DroneInativoException.class})
   public ResponseEntity<DataError> handlerConflict(RuntimeException e) {
     // public ResponseEntity<Map<String,String>>
 

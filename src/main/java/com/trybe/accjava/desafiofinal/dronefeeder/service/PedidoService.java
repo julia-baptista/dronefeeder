@@ -9,7 +9,9 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.HorarioDoPedidoSobrepostoException;
@@ -53,6 +55,10 @@ public class PedidoService {
         throw new DroneNaoEncontradoException();
       }
 
+      if (drone.get().getStatus().equals(StatusDroneEnum.INATIVO)) {
+        throw new DroneInativoException();
+      }
+
       if (dto.getPesoKg() > drone.get().getCapacidadeKg()) {
         throw new PesoExcedidoException();
       }
@@ -92,6 +98,10 @@ public class PedidoService {
       log.error(String.format("Erro ao cadastrar o pedido. ErrorMessage: [%s]", e.getMessage()), e);
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
+      }
+
+      if (e instanceof DroneInativoException) {
+        throw (DroneInativoException) e;
       }
 
       if (e instanceof PesoExcedidoException) {
