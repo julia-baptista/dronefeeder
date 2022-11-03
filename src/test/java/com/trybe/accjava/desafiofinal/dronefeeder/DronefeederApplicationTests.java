@@ -49,7 +49,7 @@ class DronefeederApplicationTests {
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(1)
-  @DisplayName("1- Deve cadastrar um novo Drone na base de dados.")
+  @DisplayName("1 - Deve cadastrar um novo Drone na base de dados.")
   void cadastrarDroneTest() throws Exception {
 
     Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
@@ -73,5 +73,22 @@ class DronefeederApplicationTests {
     assertThat(droneCaptor.getValue().getCapacidadeM3()).isNotNull();
     assertThat(droneCaptor.getValue().getStatus()).isNotNull();
 
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(2)
+  @DisplayName("2 - Deve utilizar @ControllerAdvice em controller para informar que o Drone com determinado nome já existe na base de dados.")
+  void lançaErroQuandoJaExisteDroneComMesmoNomeNoBanco() throws Exception {
+
+    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    droneRepository.save(newDrone);
+
+    mockMvc
+        .perform(post("/v1/drone").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDrone)))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isConflict()).andExpect(jsonPath("$.error").value("Drone Existente"));
   }
 }
