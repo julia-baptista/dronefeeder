@@ -64,7 +64,14 @@ class DronefeederApplicationTests {
     verify(droneRepository, atLeast(1)).save(droneCaptor.capture());
 
     assertThat(droneCaptor.getValue()).isNotNull();
-
+    assertThat(droneCaptor.getValue().getId()).isNotNull();
+    assertThat(droneCaptor.getValue().getMarca()).isNotNull();
+    assertThat(droneCaptor.getValue().getFabricante()).isNotNull();
+    assertThat(droneCaptor.getValue().getAltitudeMax()).isNotNull();
+    assertThat(droneCaptor.getValue().getDuracaoBateria()).isNotNull();
+    assertThat(droneCaptor.getValue().getCapacidadeKg()).isNotNull();
+    assertThat(droneCaptor.getValue().getCapacidadeM3()).isNotNull();
+    assertThat(droneCaptor.getValue().getStatus()).isNotNull();
 
   }
 }
