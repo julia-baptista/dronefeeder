@@ -121,9 +121,11 @@ class DronefeederApplicationTests {
   @Order(4)
   @DisplayName("4 - Deve retornar lista vazia quando não existir séries na base de dados.")
   void retornaListaVaziaQuandoNaoExistemDronesNoBancoTest() throws Exception {
+
     mockMvc.perform(get("/v1/drone").contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
         .andExpect(content().string(containsString("[]")));
+
   }
 
   @WithMockUser(username = "dronefeeder")
@@ -131,10 +133,34 @@ class DronefeederApplicationTests {
   @Order(5)
   @DisplayName("5 - Deve remover Drone, por um id existente informado.")
   void removeDronePorIdTest() throws Exception {
+
     Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
         StatusDroneEnum.ATIVO);
     droneRepository.save(newDrone);
 
     mockMvc.perform(delete("/v1/drone/" + newDrone.getId())).andExpect(status().isAccepted());
+
   }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(6)
+  @DisplayName("6 - Deve utilizar @ControllerAdvice em controller para informar que o Drone com determinado id não existe na base de dados.")
+  void removeDroneComIdNaoExistenteNoBancoTest() throws Exception {
+
+    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    droneRepository.save(newDrone);
+
+    mockMvc
+        .perform(delete("/v1/drone/2").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDrone)))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+
+  }
+
+
+
 }
