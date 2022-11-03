@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -158,6 +159,26 @@ class DronefeederApplicationTests {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(7)
+  @DisplayName("7 - Deve atualizar um Drone.")
+  void atualizaDroneTest() throws Exception {
+
+    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    droneRepository.save(newDrone);
+    Drone newDroneUpdated = new Drone("Drone 01", "Drones&Drones", "Drones&Drones", 1000.00, 48,
+        20.00, 10.00, StatusDroneEnum.ATIVO);
+
+    mockMvc
+        .perform(put("/v1/drone/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newDroneUpdated)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.marca").value(newDroneUpdated.getMarca()));
 
   }
 
