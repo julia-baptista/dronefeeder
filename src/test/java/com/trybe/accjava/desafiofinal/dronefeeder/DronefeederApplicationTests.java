@@ -3,6 +3,7 @@ package com.trybe.accjava.desafiofinal.dronefeeder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -79,7 +80,7 @@ class DronefeederApplicationTests {
   @Test
   @Order(2)
   @DisplayName("2 - Deve utilizar @ControllerAdvice em controller para informar que o Drone com determinado nome já existe na base de dados.")
-  void lançaErroQuandoJaExisteDroneComMesmoNomeNoBanco() throws Exception {
+  void cadastraDroneJaExistenteTest() throws Exception {
 
     Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
         StatusDroneEnum.ATIVO);
@@ -90,5 +91,25 @@ class DronefeederApplicationTests {
             .content(new ObjectMapper().writeValueAsString(newDrone)))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isConflict()).andExpect(jsonPath("$.error").value("Drone Existente"));
+
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(3)
+  @DisplayName("3 - Deve retornar todas os Drones existentes da base de dados.")
+  void retornaTodosOsDronesDoBancoTest() throws Exception {
+
+    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    Drone newDrone2 = new Drone("Drone 02", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+    droneRepository.save(newDrone);
+    droneRepository.save(newDrone2);
+
+    mockMvc.perform(get("/v1/drone").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].nome").value(newDrone.getNome()))
+        .andExpect(jsonPath("$[1].nome").value(newDrone2.getNome()));
   }
 }
