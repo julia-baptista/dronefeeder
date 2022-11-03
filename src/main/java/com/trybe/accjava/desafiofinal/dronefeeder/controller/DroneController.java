@@ -61,15 +61,15 @@ public class DroneController {
   }
 
   @PutMapping(value = "/ativar/{id}")
-  public ResponseEntity<Void> ativarDrone(@PathVariable("id") Long id) {
-    this.service.alterarStatus(id, StatusDroneEnum.ATIVO);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+  public ResponseEntity<DroneDto> ativarDrone(@PathVariable("id") Long id) {
+    DroneDto drone = this.service.alterarStatus(id, StatusDroneEnum.ATIVO);
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(drone);
   }
 
   @PutMapping(value = "/inativar/{id}")
-  public ResponseEntity<Void> inativarDrone(@PathVariable("id") Long id) {
-    this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+  public ResponseEntity<DroneDto> inativarDrone(@PathVariable("id") Long id) {
+    DroneDto drone = this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(drone);
   }
 
 }

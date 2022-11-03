@@ -137,7 +137,7 @@ public class DroneService {
   /**
    * Ativar e Desativar o Drone.
    */
-  public void alterarStatus(Long id, StatusDroneEnum status) {
+  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
 
@@ -151,6 +151,7 @@ public class DroneService {
 
       this.droneRepository.save(drone.get());
 
+      return converterDroneParaDroneDto(drone.get());
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
