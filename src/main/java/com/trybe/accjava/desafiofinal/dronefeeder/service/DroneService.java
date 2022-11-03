@@ -11,6 +11,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DronePossuiPedidosException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAbertoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
@@ -83,6 +84,7 @@ public class DroneService {
   /**
    * Deletar.
    */
+  @Transactional
   public void deletar(Long id) {
 
     try {
@@ -90,11 +92,22 @@ public class DroneService {
         throw new DroneNaoEncontradoException();
       }
 
+      Optional<Drone> drone = this.droneRepository.findById(id);
+
+      List<Pedido> pedidos = drone.get().getPedidos();
+
+      if (!pedidos.isEmpty()) {
+        throw new DronePossuiPedidosException();
+      }
+
       droneRepository.deleteById(id);
 
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
+      }
+      if (e instanceof DronePossuiPedidosException) {
+        throw (DronePossuiPedidosException) e;
       }
       throw new ErroInesperadoException();
     }
