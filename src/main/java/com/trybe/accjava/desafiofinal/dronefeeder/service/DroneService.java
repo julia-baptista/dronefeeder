@@ -3,13 +3,18 @@ package com.trybe.accjava.desafiofinal.dronefeeder.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAbertoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 
 @Service
@@ -137,6 +142,7 @@ public class DroneService {
   /**
    * Ativar e Desativar o Drone.
    */
+  @Transactional
   public void alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
@@ -147,6 +153,19 @@ public class DroneService {
         throw new DroneNaoEncontradoException();
       }
 
+      if (status.equals(StatusDroneEnum.INATIVO)) {
+        List<Pedido> pedidosEmAberto = drone.get().getPedidos().stream()
+            .filter(p -> p.getStatus().equals(StatusPedidoEnum.AB)
+                || p.getStatus().equals(StatusPedidoEnum.EA)
+                || p.getStatus().equals(StatusPedidoEnum.AT))
+            .collect(Collectors.toList());
+
+        if (!pedidosEmAberto.isEmpty()) {
+          throw new PedidoEmAbertoException();
+        }
+
+      }
+
       drone.get().setStatus(status);
 
       this.droneRepository.save(drone.get());
@@ -154,6 +173,10 @@ public class DroneService {
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
+      }
+
+      if (e instanceof PedidoEmAbertoException) {
+        throw (PedidoEmAbertoException) e;
       }
 
       throw new ErroInesperadoException();
