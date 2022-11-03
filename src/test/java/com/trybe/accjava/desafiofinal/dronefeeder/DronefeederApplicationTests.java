@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
@@ -56,14 +57,22 @@ class DronefeederApplicationTests {
   @DisplayName("1 - Deve cadastrar um novo Drone na base de dados.")
   void cadastrarDroneTest() throws Exception {
 
-    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
-        StatusDroneEnum.ATIVO);
+    // mockMvc
+    // .perform(post("/v1/drone").contentType(MediaType.APPLICATION_JSON)
+    // .content(new ObjectMapper().writeValueAsString("dummy")))
+    // .andExpect(status().isInternalServerError())
+    // .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    // .andExpect(jsonPath("$.error").value("Erro inesperado"));
+
+    DroneDto newDroneDto = DroneDto.builder().nome("Drone 01").marca("Drone&Cia")
+        .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
+        .capacidadeM3(10.00).build();
 
     mockMvc
         .perform(post("/v1/drone").contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(newDrone)))
+            .content(new ObjectMapper().writeValueAsString(newDroneDto)))
         .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.nome").value(newDrone.getNome()));
+        .andExpect(jsonPath("$.nome").value(newDroneDto.getNome()));
 
     verify(droneRepository, atLeast(1)).save(droneCaptor.capture());
 
@@ -168,17 +177,42 @@ class DronefeederApplicationTests {
   @DisplayName("7 - Deve atualizar um Drone.")
   void atualizaDroneTest() throws Exception {
 
-    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+    Drone newDrone1 = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
         StatusDroneEnum.ATIVO);
-    droneRepository.save(newDrone);
-    Drone newDroneUpdated = new Drone("Drone 01", "Drones&Drones", "Drones&Drones", 1000.00, 48,
-        20.00, 10.00, StatusDroneEnum.ATIVO);
+    Drone newDrone2 = new Drone("Drone 02", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+        StatusDroneEnum.ATIVO);
+
+    droneRepository.save(newDrone1);
+    droneRepository.save(newDrone2);
+
+    DroneDto droneUpdatedDto1 = DroneDto.builder().nome("Drone 02").marca("Drones&Drones")
+        .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
+        .capacidadeM3(10.00).build();
+    DroneDto droneUpdatedDto2 = DroneDto.builder().nome("Drone 01").marca("Drones&Drones")
+        .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
+        .capacidadeM3(10.00).build();
+    // Drone newDroneUpdated = new Drone("Drone 01", "Drones&Drones", "Drones&Drones", 1000.00, 48,
+    // 20.00, 10.00, StatusDroneEnum.ATIVO);
 
     mockMvc
-        .perform(put("/v1/drone/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(newDroneUpdated)))
+        .perform(put("/v1/drone/" + (newDrone1.getId() + 2)).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(droneUpdatedDto1)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+
+    mockMvc
+        .perform(put("/v1/drone/" + newDrone1.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(droneUpdatedDto1)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Drone Existente"));
+
+    mockMvc
+        .perform(put("/v1/drone/" + newDrone1.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(droneUpdatedDto2)))
         .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.marca").value(newDroneUpdated.getMarca()));
+        .andExpect(jsonPath("$.marca").value(droneUpdatedDto2.getMarca()));
 
   }
 
