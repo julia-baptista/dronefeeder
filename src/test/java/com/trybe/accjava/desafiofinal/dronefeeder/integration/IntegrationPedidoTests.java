@@ -1,5 +1,6 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.integration;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -247,6 +248,24 @@ public class IntegrationPedidoTests {
         .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$[0].descricaoPedido").value(newPedidoDto.getDescricaoPedido()))
         .andExpect(jsonPath("$[1].descricaoPedido").value(newPedidoDto2.getDescricaoPedido()));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(9)
+  @DisplayName("9 - Deve falhar ao tentar excluir um pedido não encontrado no banco de dados.")
+  void shouldFailDeletarPedidoNaoEncontradoNoBanco() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    mockMvc.perform(delete("/v1/pedido/" + pedidoDto.getId() + 1)).andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
   }
 
 }
