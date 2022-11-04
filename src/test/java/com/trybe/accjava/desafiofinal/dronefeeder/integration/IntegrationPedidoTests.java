@@ -523,4 +523,49 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("DataHora do pedido inválida."));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(19)
+  @DisplayName("19 - Deve alterar um pedido com sucesso")
+  void shouldAlterarUmPedidoComSucesso() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Xbox Series X").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.descricaoPedido").value(newPedidoDto2.getDescricaoPedido()));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(20)
+  @DisplayName("20 - Deve falhar ao tentar alterar o status de um pedido não encontrado no banco de dados.")
+  void shouldFailAlterarStatusPedidoNaoEncontradoNoBanco() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    mockMvc.perform(put("/v1/pedido/cancelar/" + pedidoDto.getId() + 1))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
+
+  }
 }
