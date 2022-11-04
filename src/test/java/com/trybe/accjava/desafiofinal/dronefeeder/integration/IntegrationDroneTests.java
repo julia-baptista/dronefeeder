@@ -1,4 +1,4 @@
-package com.trybe.accjava.desafiofinal.dronefeeder;
+package com.trybe.accjava.desafiofinal.dronefeeder.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DronefeederApplicationTests {
+class IntegrationDroneTests {
 
   @Autowired
   private MockMvc mockMvc;

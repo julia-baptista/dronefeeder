@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
@@ -26,6 +25,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.PedidoRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.util.DataUtil;
+import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -198,6 +198,7 @@ public class PedidoService {
 
       throw new ErroInesperadoException();
     }
+
 
   }
 

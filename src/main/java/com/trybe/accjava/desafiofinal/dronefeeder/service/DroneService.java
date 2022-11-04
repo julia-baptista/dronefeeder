@@ -47,7 +47,7 @@ public class DroneService {
     }
   }
 
-  private Drone converterDroneDtoParaDrone(DroneDto dto) {
+  public Drone converterDroneDtoParaDrone(DroneDto dto) {
     Drone drone = new Drone(dto.getNome(), dto.getMarca(), dto.getFabricante(),
         dto.getAltitudeMax(), dto.getDuracaoBateria(), dto.getCapacidadeKg(), dto.getCapacidadeM3(),
         StatusDroneEnum.ATIVO);
