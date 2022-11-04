@@ -1,5 +1,6 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.integration;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -192,10 +193,60 @@ public class IntegrationPedidoTests {
             .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
         .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.descricaoPedido").value(newPedidoDto.getDescricaoPedido()));
-
-
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(7)
+  @DisplayName("7 - Deve listar todos os pedidos com sucesso.")
+  void shouldListarTodosPedidos() throws Exception {
 
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("PlayStation 5").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    pedidoService.cadastrar(newPedidoDto);
+    pedidoService.cadastrar(newPedidoDto2);
+
+    mockMvc
+        .perform(get("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$[0].descricaoPedido").value(newPedidoDto.getDescricaoPedido()))
+        .andExpect(jsonPath("$[1].descricaoPedido").value(newPedidoDto2.getDescricaoPedido()));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(8)
+  @DisplayName("8 - Deve listar todos os pedidos de um Drone específico.")
+  void shouldListarTodosPedidosDeUmDrone() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("PlayStation 5").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    pedidoService.cadastrar(newPedidoDto);
+    pedidoService.cadastrar(newPedidoDto2);
+
+    mockMvc
+        .perform(get("/v1/pedido/drone/" + result.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$[0].descricaoPedido").value(newPedidoDto.getDescricaoPedido()))
+        .andExpect(jsonPath("$[1].descricaoPedido").value(newPedidoDto2.getDescricaoPedido()));
+  }
 
 }
