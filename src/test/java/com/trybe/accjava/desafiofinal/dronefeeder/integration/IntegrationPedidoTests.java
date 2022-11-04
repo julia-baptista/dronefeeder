@@ -610,7 +610,32 @@ public class IntegrationPedidoTests {
         .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
-
   }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(23)
+  @DisplayName("23 - Deve atualizar as coordenadas de um pedido com sucesso.")
+  void shouldAtualizarCoordenadasPedido() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    AtualizaCoordenadaPedidoDto atualizacaoCoordenadasPedidoDto = AtualizaCoordenadaPedidoDto
+        .builder().pedidoId(pedidoDto.getId()).latitude(1589).longitude(424).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/atualizacoordenadas").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(atualizacaoCoordenadasPedidoDto)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.latitude").value(atualizacaoCoordenadasPedidoDto.getLatitude()));
+  }
+
+
 
 }
