@@ -124,4 +124,24 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("Peso Excedido"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(4)
+  @DisplayName("4 - Deve falhar ao cadastrar um pedido que exceda a capacidade de carga em m3 do drone.")
+  void shouldFailCadastrarPedidoM3MaiorDoQueCapacidadeDrone() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Cama King Size").valorDoPedido(new BigDecimal(3000.00))
+        .droneId(result.getId()).pesoKg(19.00).volumeM3(15.00).build();
+
+    mockMvc
+        .perform(post("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Volume Excedido"));
+  }
+
 }
