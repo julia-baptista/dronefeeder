@@ -1,6 +1,12 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
 import static org.mockito.Mockito.times;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
+import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,12 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
-import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
-import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
-import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 
 @SpringBootTest
 public class DroneServiceTest {
