@@ -462,4 +462,31 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("Peso Excedido"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(17)
+  @DisplayName("17 - Deve falhar ao alterar o volume cúbico de um pedido para mais que o drone pode transportar.")
+  void shouldFailAlterarVolumeCubicoMaiorDoQuePesoDroneTransporta() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
+        .descricaoPedido("Televisão Samsung").valorDoPedido(new BigDecimal(2599.00))
+        .droneId(result.getId()).pesoKg(19.00).volumeM3(11.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Volume Excedido"));
+  }
+
 }
