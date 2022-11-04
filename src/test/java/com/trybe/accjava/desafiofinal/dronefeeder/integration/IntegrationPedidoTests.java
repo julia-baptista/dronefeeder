@@ -159,6 +159,7 @@ public class IntegrationPedidoTests {
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
     pedidoService.cadastrar(newPedidoDto);
 
     PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("10/11/2022 09:30")
@@ -173,5 +174,28 @@ public class IntegrationPedidoTests {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error").value("DataHora do pedido inválida."));
   }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(6)
+  @DisplayName("6 - Deve cadastrar um pedido com sucesso.")
+  void shouldCadastrarPedido() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(1.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(post("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.descricaoPedido").value(newPedidoDto.getDescricaoPedido()));
+
+
+  }
+
+
 
 }
