@@ -401,4 +401,38 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("Pedido entregue"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(15)
+  @DisplayName("15 - Deve falhar ao alterar um pedido colocando um drone que está inativo.")
+  void shouldFailAlterarPedidoParaDroneInativo() throws Exception {
+
+    DroneDto newDroneDto2 = DroneDto.builder().nome("Drone 02").marca("Drone&Cia")
+        .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
+        .capacidadeM3(10.00).build();
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    DroneDto result2 = droneService.cadastrar(newDroneDto2);
+
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    droneService.alterarStatus(result2.getId(), StatusDroneEnum.INATIVO);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
+        .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
+        .droneId(result2.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Drone inativo"));
+  }
+
 }
