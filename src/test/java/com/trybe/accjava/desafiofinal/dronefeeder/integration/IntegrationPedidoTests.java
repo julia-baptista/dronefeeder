@@ -552,8 +552,8 @@ public class IntegrationPedidoTests {
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(20)
-  @DisplayName("20 - Deve falhar ao tentar alterar o status de um pedido não encontrado no banco de dados.")
-  void shouldFailAlterarStatusPedidoNaoEncontradoNoBanco() throws Exception {
+  @DisplayName("20 - Deve falhar ao tentar cancelar um pedido não encontrado no banco de dados.")
+  void shouldFailCancelarPedidoNaoEncontradoNoBanco() throws Exception {
 
     DroneDto result = droneService.cadastrar(newDroneDto);
     newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
@@ -566,6 +566,29 @@ public class IntegrationPedidoTests {
     mockMvc.perform(put("/v1/pedido/cancelar/" + pedidoDto.getId() + 1))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
-
   }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(21)
+  @DisplayName("21 - Deve cancelar um pedido com sucesso.")
+  void shouldFailAlterarStatusPedidoNaoEncontradoNoBanco() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    mockMvc.perform(put("/v1/pedido/cancelar/" + pedidoDto.getId()))
+        .andExpect(status().isAccepted());
+  }
+
+  // @WithMockUser(username = "dronefeeder")
+  // @Test
+  // @Order(20)
+  // @DisplayName("22 - Deve falhar ao tentar atualizar as coordenadas de um pedido não encontrado
+  // no banco de dados.")
 }
