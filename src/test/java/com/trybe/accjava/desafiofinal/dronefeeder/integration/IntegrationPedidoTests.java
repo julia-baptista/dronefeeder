@@ -369,7 +369,7 @@ public class IntegrationPedidoTests {
             .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
         .andExpect(status().isConflict())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.error").value("Pedido entregue"));
+        .andExpect(jsonPath("$.error").value("Pedido em andamento"));
   }
 
   @WithMockUser(username = "dronefeeder")
@@ -433,6 +433,33 @@ public class IntegrationPedidoTests {
         .andExpect(status().isConflict())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error").value("Drone inativo"));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(16)
+  @DisplayName("16 - Deve falhar ao alterar o peso de um pedido para mais que o drone pode transportar.")
+  void shouldFailAlterarPesoPedidoMaiorDoQuePesoDroneTransporta() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
+        .descricaoPedido("Televisão Samsung").valorDoPedido(new BigDecimal(2599.00))
+        .droneId(result.getId()).pesoKg(22.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Peso Excedido"));
   }
 
 }
