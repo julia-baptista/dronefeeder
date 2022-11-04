@@ -489,4 +489,38 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("Volume Excedido"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(18)
+  @DisplayName("18 - Deve falhar ao alterar o pedido de forma que sobreponha o horário de entrega de outro pedido do mesmo Drone.")
+  void shouldFailAlterarHorarioPedidoQueSobreponhaHorarioOutroPedido() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Xbox Series X").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    pedidoService.cadastrar(newPedidoDto2);
+
+    PedidoDto newPedidoDto3 = PedidoDto.builder().dataEntregaProgramada("11/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("PlayStation 5").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto3)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("DataHora do pedido inválida."));
+  }
+
 }
