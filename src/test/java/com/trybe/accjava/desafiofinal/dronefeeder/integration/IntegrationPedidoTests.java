@@ -372,4 +372,33 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.error").value("Pedido entregue"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(14)
+  @DisplayName("14 - Deve falhar ao alterar um pedido que está com status entregue.")
+  void shoulfFailAlterarPedidoStatusEntregue() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
+
+    PedidoDto pedidoDto = pedidoService.cadastrar(newPedidoDto);
+
+    pedidoService.alterarStatus(pedidoDto.getId(), StatusPedidoEnum.EN);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
+        .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(put("/v1/pedido/" + pedidoDto.getId()).contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Pedido entregue"));
+  }
+
 }
