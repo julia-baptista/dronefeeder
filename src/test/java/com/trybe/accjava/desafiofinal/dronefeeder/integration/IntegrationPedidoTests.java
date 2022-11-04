@@ -67,7 +67,7 @@ public class IntegrationPedidoTests {
   @Test
   @Order(1)
   @DisplayName("1 - Deve falhar ao cadastrar um pedido com um drone inexistente.")
-  void cadastraPedidoDroneInexistente() throws Exception {
+  void shouldFailCadastrarPedidoDroneInexistente() throws Exception {
 
     DroneDto result = droneService.cadastrar(newDroneDto);
     newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
@@ -87,7 +87,7 @@ public class IntegrationPedidoTests {
   @Test
   @Order(2)
   @DisplayName("2 - Deve falhar ao cadastrar um pedido com um drone inativo.")
-  void cadastraPedidoDroneInativo() throws Exception {
+  void shouldFailCadastrarPedidoDroneInativo() throws Exception {
 
     DroneDto result = droneService.cadastrar(newDroneDto);
     droneService.alterarStatus(result.getId(), StatusDroneEnum.INATIVO);
@@ -102,6 +102,26 @@ public class IntegrationPedidoTests {
         .andExpect(status().isConflict())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error").value("Drone inativo"));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(3)
+  @DisplayName("3 - Deve falhar ao cadastrar um pedido que exceda a capacidade de carga em Kg do drone.")
+  void shouldFailCadastrarPedidoKgMaiorDoQueCapacidadeDrone() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Anilha 30kg").valorDoPedido(new BigDecimal(150.00))
+        .droneId(result.getId()).pesoKg(30.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(post("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Peso Excedido"));
   }
 
 }
