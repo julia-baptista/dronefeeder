@@ -13,6 +13,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.PedidoRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -39,6 +40,9 @@ public class IntegrationPedidoTests {
 
   @Autowired
   private DroneService droneService;
+
+  @Autowired
+  private PedidoService pedidoService;
 
   @SpyBean
   private PedidoRepository pedidoRepository;
@@ -142,6 +146,32 @@ public class IntegrationPedidoTests {
         .andExpect(status().isConflict())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error").value("Volume Excedido"));
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(5)
+  @DisplayName("5 - Deve falhar ao cadastrar um pedido que sobreponha o horário de outro pedido do drone escolhido.")
+  void shouldFailCadastrarPedidoComHorarioSobreposto() throws Exception {
+
+    DroneDto result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+    pedidoService.cadastrar(newPedidoDto);
+
+    PedidoDto newPedidoDto2 = PedidoDto.builder().dataEntregaProgramada("10/11/2022 09:30")
+        .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("PlayStation 5").valorDoPedido(new BigDecimal(4499.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(post("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto2)))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("DataHora do pedido inválida."));
   }
 
 }
