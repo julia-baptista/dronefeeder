@@ -16,6 +16,9 @@ import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 // https://spring.io/guides/tutorials/rest/
 @RestController
@@ -32,12 +35,24 @@ public class DroneController {
   // https://www.baeldung.com/spring-415-unsupported-mediatype#:~:text=The%20415%20(Unsupported%20Media%20Type,t%20supported%20by%20the%20API.
   // Como validar os campos do payload
   // https://www.baeldung.com/spring-boot-bean-validation
+  @ApiOperation(value = "Operação responsável por cadastrar um drone", notes = "Cadastrar Drone")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Pedido cadastrado com sucesso",
+          response = DroneDto.class),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 409, message = "Drone existente")})
   @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
   public ResponseEntity<DroneDto> cadastrarDrone(@RequestBody @Valid DroneDto dto) {
     DroneDto novoDrone = service.cadastrar(dto);
     return ResponseEntity.ok(novoDrone);
   }
 
+  @ApiOperation(value = "Operação responsável por listar os drones", notes = "Listar Drones")
+  @ApiResponses(
+      value = {@ApiResponse(code = 200, message = "Lista de drones recuperada com sucesso"),
+          @ApiResponse(code = 401, message = "Não autorizado"),
+          @ApiResponse(code = 500, message = "Erro inesperado")})
   @GetMapping(produces = {"application/json"})
   public ResponseEntity<List<DroneDto>> listarDrones() {
     List<DroneDto> lista = service.listar();
@@ -46,6 +61,12 @@ public class DroneController {
 
   // Delete example
   // https://tedblob.com/deletemapping-spring-boot-example/
+  @ApiOperation(value = "Operação responsável por deletar um drone.", notes = "Deleta drone")
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Drone removido com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Drone não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 409, message = "Drone possui pedidos")})
   @DeleteMapping(value = "/{id}")
   public ResponseEntity<Void> deletarDrone(@PathVariable("id") Long id) {
     this.service.deletar(id);
@@ -54,6 +75,16 @@ public class DroneController {
 
   // Como validar os campos do payload
   // https://www.baeldung.com/spring-boot-bean-validation
+  @ApiOperation(value = "Operação responsável por alterar dados de um drone",
+      notes = "Alterar Drone")
+  @ApiResponses(
+      value = {
+          @ApiResponse(code = 200, message = "Drone alterado com sucesso",
+              response = DroneDto.class),
+          @ApiResponse(code = 401, message = "Não autorizado"),
+          @ApiResponse(code = 404, message = "Drone não encontrado"),
+          @ApiResponse(code = 500, message = "Erro inesperado"),
+          @ApiResponse(code = 409, message = "Drone existente")})
   @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
   public ResponseEntity<DroneDto> alterarDrone(@PathVariable("id") Long id,
       @RequestBody @Valid DroneDto dto) {
@@ -61,12 +92,23 @@ public class DroneController {
     return ResponseEntity.ok(drone);
   }
 
+  @ApiOperation(value = "Operação responsável por ativar um drone", notes = "Ativar Drone")
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Drone ativado com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Drone não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado")})
   @PutMapping(value = "/ativar/{id}")
   public ResponseEntity<Void> ativarDrone(@PathVariable("id") Long id) {
     this.service.alterarStatus(id, StatusDroneEnum.ATIVO);
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
   }
 
+  @ApiOperation(value = "Operação responsável por desativar um drone", notes = "Desativar Drone")
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Drone desativado com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Drone não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 409, message = "Pedido em andamento")})
   @PutMapping(value = "/inativar/{id}")
   public ResponseEntity<Void> inativarDrone(@PathVariable("id") Long id) {
     this.service.alterarStatus(id, StatusDroneEnum.INATIVO);
