@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
@@ -25,7 +26,6 @@ import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.PedidoRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.util.DataUtil;
-import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -39,7 +39,6 @@ public class PedidoService {
     super();
     this.pedidoRepository = pedidoRepository;
     this.droneRepository = droneRepository;
-
   }
 
   /**
@@ -345,6 +344,10 @@ public class PedidoService {
         throw new PedidoNaoEncontradoException();
       }
 
+      if (StatusPedidoEnum.EN.equals(pedido.get().getStatus())) {
+        throw new PedidoEntregueException();
+      }
+
       pedido.get().setLatitude(dto.getLatitude());
       pedido.get().setLongitude(dto.getLongitude());
 
@@ -357,12 +360,21 @@ public class PedidoService {
         throw (PedidoNaoEncontradoException) e;
       }
 
+      if (e instanceof PedidoEntregueException) {
+        throw (PedidoEntregueException) e;
+      }
+
       throw new ErroInesperadoException();
     }
 
   }
 
+  /**
+   * Listar pedidos por status.
+   */
   public List<Pedido> listaPedidosPorStatus(List<StatusPedidoEnum> status) {
     return this.pedidoRepository.findByStatusIn(status);
   }
+
+
 }

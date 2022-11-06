@@ -2,6 +2,7 @@ package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DataError;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
@@ -51,7 +52,7 @@ public class GerenciadorAdvice {
   /**
    * Metodo handlerInternalServerError.
    **/
-  @ExceptionHandler(ErroInesperadoException.class)
+  @ExceptionHandler({ErroInesperadoException.class, CarregarVideoEntregaException.class})
   public ResponseEntity<DataError> handleInternalServer(RuntimeException e) {
 
     DataError payload = new DataError(e.getMessage());
