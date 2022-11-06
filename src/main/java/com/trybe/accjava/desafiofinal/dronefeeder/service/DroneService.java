@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
@@ -17,6 +16,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAbertoExcept
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DroneService {
@@ -47,7 +47,7 @@ public class DroneService {
     }
   }
 
-  private Drone converterDroneDtoParaDrone(DroneDto dto) {
+  public Drone converterDroneDtoParaDrone(DroneDto dto) {
     Drone drone = new Drone(dto.getNome(), dto.getMarca(), dto.getFabricante(),
         dto.getAltitudeMax(), dto.getDuracaoBateria(), dto.getCapacidadeKg(), dto.getCapacidadeM3(),
         StatusDroneEnum.ATIVO);
@@ -156,7 +156,7 @@ public class DroneService {
    * Ativar e Desativar o Drone.
    */
   @Transactional
-  public void alterarStatus(Long id, StatusDroneEnum status) {
+  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
 
@@ -183,6 +183,7 @@ public class DroneService {
 
       this.droneRepository.save(drone.get());
 
+      return converterDroneParaDroneDto(drone.get());
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;

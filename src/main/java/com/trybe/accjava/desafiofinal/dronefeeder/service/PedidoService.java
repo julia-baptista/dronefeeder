@@ -39,7 +39,6 @@ public class PedidoService {
     super();
     this.pedidoRepository = pedidoRepository;
     this.droneRepository = droneRepository;
-
   }
 
   /**
@@ -199,6 +198,7 @@ public class PedidoService {
       throw new ErroInesperadoException();
     }
 
+
   }
 
   /**
@@ -344,6 +344,10 @@ public class PedidoService {
         throw new PedidoNaoEncontradoException();
       }
 
+      if (StatusPedidoEnum.EN.equals(pedido.get().getStatus())) {
+        throw new PedidoEntregueException();
+      }
+
       pedido.get().setLatitude(dto.getLatitude());
       pedido.get().setLongitude(dto.getLongitude());
 
@@ -356,12 +360,21 @@ public class PedidoService {
         throw (PedidoNaoEncontradoException) e;
       }
 
+      if (e instanceof PedidoEntregueException) {
+        throw (PedidoEntregueException) e;
+      }
+
       throw new ErroInesperadoException();
     }
 
   }
 
+  /**
+   * Listar pedidos por status.
+   */
   public List<Pedido> listaPedidosPorStatus(List<StatusPedidoEnum> status) {
     return this.pedidoRepository.findByStatusIn(status);
   }
+
+
 }

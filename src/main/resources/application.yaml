@@ -23,7 +23,9 @@ spring:
     #https://stackoverflow.com/questions/70036953/spring-boot-2-6-0-spring-fox-3-failed-to-start-bean-documentationpluginsboo
     mvc:
         pathmatch.matching-strategy: ant_path_matcher
-
+    servlet.multipart:
+        max-file-size: 100MB
+        max-request-size: 100MB
 
 resilience4j.circuitbreaker:
   configs:
@@ -33,3 +35,5 @@ resilience4j.circuitbreaker:
   #instances:
     #estudantes:
       #baseConfig: default
+app:
+  path.arquivos: /home/samsung/Documentos/pedidos/upload/

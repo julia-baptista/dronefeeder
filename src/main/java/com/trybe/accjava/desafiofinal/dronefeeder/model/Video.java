@@ -14,7 +14,7 @@ public class Video {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
-  private String localizacao;
+  private String nomeArquivo;
 
   @OneToOne(mappedBy = "video", cascade = CascadeType.ALL, orphanRemoval = true,
       fetch = FetchType.LAZY)
@@ -25,10 +25,10 @@ public class Video {
     super();
   }
 
-  public Video(Long id, String localizacao, Pedido pedido) {
+  public Video(Long id, String nomeArquivo, Pedido pedido) {
     super();
     this.id = id;
-    this.localizacao = localizacao;
+    this.nomeArquivo = nomeArquivo;
     this.pedido = pedido;
   }
 
@@ -40,12 +40,12 @@ public class Video {
     this.id = id;
   }
 
-  public String getLocalizacao() {
-    return localizacao;
+  public String getNomeArquivo() {
+    return nomeArquivo;
   }
 
-  public void setLocalizacao(String localizacao) {
-    this.localizacao = localizacao;
+  public void setNomeArquivo(String nomeArquivo) {
+    this.nomeArquivo = nomeArquivo;
   }
 
   public Pedido getPedido() {
