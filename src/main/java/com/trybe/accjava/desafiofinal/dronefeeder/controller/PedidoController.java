@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.exception.DataError;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,9 @@ public class PedidoController {
       @ApiResponse(code = 200, message = "Pedido cadastrado com sucesso",
           response = PedidoDto.class),
       @ApiResponse(code = 401, message = "Não autorizado"),
-      @ApiResponse(code = 500, message = "Erro inesperado", response = DataError.class),
-      @ApiResponse(code = 404, message = "Drone não encontrado", response = DataError.class),
-      @ApiResponse(code = 409, message = "Peso e/ou volume excedido, Data/Hora indisponível",
-          response = DataError.class)})
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 404, message = "Drone não encontrado"),
+      @ApiResponse(code = 409, message = "Peso e/ou volume excedido, Data/Hora indisponível")})
   @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
   public ResponseEntity<PedidoDto> cadastrarPedido(@RequestBody @Valid PedidoDto dto) {
     log.info("Requisição para cadastrar o pedido recebida.");
@@ -52,7 +50,7 @@ public class PedidoController {
 
   @ApiOperation(value = "Operação responsável por listar os pedidos", notes = "Listar Pedidos")
   @ApiResponses(
-      value = {@ApiResponse(code = 200, message = "Lista de pedidos recuperadas com sucesso"),
+      value = {@ApiResponse(code = 200, message = "Lista de pedidos recuperada com sucesso"),
           @ApiResponse(code = 401, message = "Não autorizado"),
           @ApiResponse(code = 500, message = "Erro inesperado")})
   @GetMapping(produces = {"application/json"})
@@ -84,6 +82,14 @@ public class PedidoController {
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
   }
 
+  @ApiOperation(value = "Operação responsável por alterar um pedido.", notes = "Altera pedido")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Pedido alterado com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Pedido não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 409,
+          message = "Peso e/ou volume excedido, Data/Hora indisponível, Pedido cancelado, em andamento ou entregue, DroneInativo,")})
+
   @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
   public ResponseEntity<PedidoDto> alterarPedido(@PathVariable("id") Long id,
       @RequestBody @Valid PedidoDto dto) {
@@ -110,7 +116,7 @@ public class PedidoController {
       @ApiResponse(code = 500, message = "Erro inesperado")})
   @PutMapping(value = "/atualizacoordenadas", consumes = {"application/json"},
       produces = {"application/json"})
-  public ResponseEntity<PedidoDto> atualizarCoodenadas(
+  public ResponseEntity<PedidoDto> atualizarCoordenadas(
       @RequestBody @Valid AtualizaCoordenadaPedidoDto dto) {
     PedidoDto pedidoAlterado = this.pedidoService.atualizarCoordenadas(dto);
     return ResponseEntity.ok(pedidoAlterado);
