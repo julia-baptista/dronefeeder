@@ -4,20 +4,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.VideoService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,6 +46,13 @@ public class VideoController {
   // Upload de arquivos:
   // https://github.com/feltex/upload-arquivos-api
   // https://www.youtube.com/watch?v=3ZUaE6Xh3qk
+  @ApiOperation(value = "Operação responsável por cadastrar o video enviado pelo drone",
+      notes = "Cadastrar o envio do video")
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastado com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Pedido não encontrado"),
+      @ApiResponse(code = 409, message = "Pedido já entregue"),
+      @ApiResponse(code = 500, message = "Erro inesperado e/ou Erro ao carregar o video")})
   @PostMapping("/upload")
   public ResponseEntity<Void> salvarArquivo(@RequestParam("file") MultipartFile file,
       @RequestParam("pedidoId") Long pedidoId, @RequestParam("latitude") Integer latitude,
@@ -62,6 +76,19 @@ public class VideoController {
     }
     this.videoService.salvar(dto.getPedidoId(), nomeArquivo);
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+  }
+
+  @ApiOperation(value = "Operação responsável por listar os videos enviados pelos drones",
+      notes = "Listar Videos")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200,
+          message = "Lista de videos enviados pelos drones recuperada com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 500, message = "Erro inesperado")})
+  @GetMapping(produces = {"application/json"})
+  public ResponseEntity<List<VideoResponseDto>> listarVideos() {
+    List<VideoResponseDto> lista = this.videoService.listar();
+    return ResponseEntity.ok(lista);
   }
 
   private String extrairExtensao(String nomeArquivo) {
