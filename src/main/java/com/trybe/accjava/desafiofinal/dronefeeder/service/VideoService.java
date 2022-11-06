@@ -1,8 +1,12 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoNaoEncontradoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
@@ -47,6 +51,28 @@ public class VideoService {
       }
       throw new ErroInesperadoException();
     }
+  }
+
+  /**
+   * Listar.
+   */
+  public List<VideoResponseDto> listar() {
+    try {
+      List<VideoResponseDto> videosDto = new ArrayList<VideoResponseDto>();
+      List<Video> videos = videoRepository.findAll();
+      videos.stream().forEach(video -> {
+        videosDto.add(converterVideoParavideoDto(video));
+      });
+      return videosDto;
+    } catch (Exception e) {
+      log.error("Erro ao recuperar os videos", e);
+      throw new ErroInesperadoException();
+    }
+  }
+
+  private VideoResponseDto converterVideoParavideoDto(Video video) {
+    return VideoResponseDto.builder().id(video.getId()).nomeArquivo(video.getNomeArquivo())
+        .pedidoId(Objects.isNull(video.getPedido()) ? null : video.getPedido().getId()).build();
   }
 
 }
