@@ -47,7 +47,7 @@ public class VideoController {
   // https://www.youtube.com/watch?v=3ZUaE6Xh3qk
   @ApiOperation(value = "Operação responsável por cadastrar o video enviado pelo drone",
       notes = "Cadastrar o envio do video")
-  @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastado com sucesso"),
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastrado com sucesso"),
       @ApiResponse(code = 401, message = "Não autorizado"),
       @ApiResponse(code = 404, message = "Pedido não encontrado"),
       @ApiResponse(code = 409, message = "Pedido já entregue"),

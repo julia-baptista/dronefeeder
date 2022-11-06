@@ -2,6 +2,8 @@
 
 package com.trybe.accjava.desafiofinal.dronefeeder.integration;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -91,5 +94,31 @@ public class IntegrationVideoTests {
         .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(2)
+  @DisplayName("2 - Deve salvar um Video no banco de dados.")
+  void shouldSalvarVideoNoBanco() throws Exception {
 
+    PedidoDto pedidoDtoRetorno = pedidoService.cadastrar(newPedidoDto);
+    String pedidoIdString = pedidoDtoRetorno.getId().toString();
+
+    MockMultipartFile fileTest = new MockMultipartFile("file", "test-file.txt", "text/plain",
+        "Teste Integração Upload Vídeo".getBytes());
+
+    mockMvc
+        .perform(MockMvcRequestBuilders.multipart("/v1/video/upload").file(fileTest)
+            .param("pedidoId", pedidoIdString).param("latitude", "200").param("longitude", "200"))
+        .andExpect(status().isAccepted());
+  }
+
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(3)
+  @DisplayName("3 - Deve listar os Videos do banco de dados.")
+  void shouldListarVideosDoBanco() throws Exception {
+
+    mockMvc.perform(get("/v1/video").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+  }
 }

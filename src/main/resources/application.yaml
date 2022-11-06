@@ -36,4 +36,4 @@ resilience4j.circuitbreaker:
     #estudantes:
       #baseConfig: default
 app:
-  path.arquivos: /home/samsung/Documentos/pedidos/upload/
+  path.arquivos: /Users/jossanymoura/desktop
