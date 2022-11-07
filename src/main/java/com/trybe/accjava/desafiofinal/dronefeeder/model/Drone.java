@@ -6,17 +6,19 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 
 @Entity
 public class Drone {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private String nome;
@@ -36,7 +38,9 @@ public class Drone {
   @Enumerated(EnumType.STRING)
   private StatusDroneEnum status;
 
-  @OneToMany(mappedBy = "drone", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "drone", cascade = CascadeType.ALL, orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  @JsonIgnore
   private List<Pedido> pedidos = new ArrayList<>();
 
   public Drone() {
@@ -140,6 +144,14 @@ public class Drone {
 
   public void setStatus(StatusDroneEnum status) {
     this.status = status;
+  }
+
+  public List<Pedido> getPedidos() {
+    return pedidos;
+  }
+
+  public void setPedidos(List<Pedido> pedidos) {
+    this.pedidos = pedidos;
   }
 
 

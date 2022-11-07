@@ -1,5 +1,7 @@
 server:
   port: 8080
+  #https://stackoverflow.com/questions/32927937/how-to-set-base-url-for-rest-in-spring-boot
+  servlet.context-path: /dronefeeder
 spring:
     datasource:
         username: ${DB_USER}
@@ -8,6 +10,7 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update
+            enable_lazy_load_no_trans: true
         show-sql: true
         open-in-view: false
         #https://ia-tec-development.medium.com/lombok-e-spring-data-jpa-142398897733
@@ -15,7 +18,14 @@ spring:
         name: dronefeeder
         password: dronefeeder
         #https://www.baeldung.com/spring-boot-security-autoconfiguration
-
+    main:
+        allow-bean-definition-overriding: true
+    #https://stackoverflow.com/questions/70036953/spring-boot-2-6-0-spring-fox-3-failed-to-start-bean-documentationpluginsboo
+    mvc:
+        pathmatch.matching-strategy: ant_path_matcher
+    servlet.multipart:
+        max-file-size: 100MB
+        max-request-size: 100MB
 
 resilience4j.circuitbreaker:
   configs:
@@ -25,3 +35,5 @@ resilience4j.circuitbreaker:
   #instances:
     #estudantes:
       #baseConfig: default
+app:
+  path.arquivos: /Users/jossanymoura/desktop

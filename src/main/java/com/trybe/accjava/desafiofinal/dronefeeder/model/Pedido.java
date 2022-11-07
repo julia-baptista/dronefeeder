@@ -13,17 +13,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 
 @Entity
 public class Pedido {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private LocalDateTime dataEntregaProgramada;
-  private Integer duracaoDoPercurso;
+  private Long duracaoDoPercurso;
   private LocalDateTime dataProgramadaDaSaida;
   private LocalDateTime dataConfirmacaoEntrega;
   private String enderecoDeEntrega;
@@ -34,8 +35,9 @@ public class Pedido {
   private String descricaoPedido;
   private BigDecimal valorDoPedido;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "drone_id")
+  @JsonIgnore
   private Drone drone;
 
   private Double pesoKg;
@@ -49,16 +51,18 @@ public class Pedido {
 
   public Pedido() {}
 
-  public Pedido(Long id, LocalDateTime dataEntregaProgramada, Integer duracaoDoPercurso,
+  public Pedido(Long id, LocalDateTime dataEntregaProgramada, Long duracaoDoPercurso,
       LocalDateTime dataProgramadaDaSaida, LocalDateTime dataConfirmacaoEntrega,
-      StatusPedidoEnum status, String descricaoPedido, BigDecimal valorDoPedido, Drone drone,
-      Double pesoKg, Double volumeM3, Integer latitude, Integer longitude, Video video) {
+      String enderecoDeEntrega, StatusPedidoEnum status, String descricaoPedido,
+      BigDecimal valorDoPedido, Drone drone, Double pesoKg, Double volumeM3, Integer latitude,
+      Integer longitude, Video video) {
     super();
     this.id = id;
     this.dataEntregaProgramada = dataEntregaProgramada;
     this.duracaoDoPercurso = duracaoDoPercurso;
     this.dataProgramadaDaSaida = dataProgramadaDaSaida;
     this.dataConfirmacaoEntrega = dataConfirmacaoEntrega;
+    this.enderecoDeEntrega = enderecoDeEntrega;
     this.status = status;
     this.descricaoPedido = descricaoPedido;
     this.valorDoPedido = valorDoPedido;
@@ -70,15 +74,17 @@ public class Pedido {
     this.video = video;
   }
 
-  public Pedido(LocalDateTime dataEntregaProgramada, Integer duracaoDoPercurso,
+  public Pedido(LocalDateTime dataEntregaProgramada, Long duracaoDoPercurso,
       LocalDateTime dataProgramadaDaSaida, LocalDateTime dataConfirmacaoEntrega,
-      StatusPedidoEnum status, String descricaoPedido, BigDecimal valorDoPedido, Double pesoKg,
-      Double volumeM3, Integer latitude, Integer longitude, Video video) {
+      String enderecoDeEntrega, StatusPedidoEnum status, String descricaoPedido,
+      BigDecimal valorDoPedido, Double pesoKg, Double volumeM3, Integer latitude, Integer longitude,
+      Video video) {
     super();
     this.dataEntregaProgramada = dataEntregaProgramada;
     this.duracaoDoPercurso = duracaoDoPercurso;
     this.dataProgramadaDaSaida = dataProgramadaDaSaida;
     this.dataConfirmacaoEntrega = dataConfirmacaoEntrega;
+    this.enderecoDeEntrega = enderecoDeEntrega;
     this.status = status;
     this.descricaoPedido = descricaoPedido;
     this.valorDoPedido = valorDoPedido;
@@ -104,11 +110,11 @@ public class Pedido {
     this.dataEntregaProgramada = dataEntregaProgramada;
   }
 
-  public Integer getDuracaoDoPercurso() {
+  public Long getDuracaoDoPercurso() {
     return duracaoDoPercurso;
   }
 
-  public void setDuracaoDoPercurso(Integer duracaoDoPercurso) {
+  public void setDuracaoDoPercurso(Long duracaoDoPercurso) {
     this.duracaoDoPercurso = duracaoDoPercurso;
   }
 
@@ -122,6 +128,14 @@ public class Pedido {
 
   public LocalDateTime getDataConfirmacaoEntrega() {
     return dataConfirmacaoEntrega;
+  }
+
+  public String getEnderecoDeEntrega() {
+    return enderecoDeEntrega;
+  }
+
+  public void setEnderecoDeEntrega(String enderecoDeEntrega) {
+    this.enderecoDeEntrega = enderecoDeEntrega;
   }
 
   public void setDataConfirmacaoEntrega(LocalDateTime dataConfirmacaoEntrega) {

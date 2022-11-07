@@ -1,15 +1,22 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneNaoEncontradoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.DronePossuiPedidosException;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.ErroInesperadoException;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.PedidoEmAbertoException;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DroneService {
@@ -40,7 +47,7 @@ public class DroneService {
     }
   }
 
-  private Drone converterDroneDtoParaDrone(DroneDto dto) {
+  public Drone converterDroneDtoParaDrone(DroneDto dto) {
     Drone drone = new Drone(dto.getNome(), dto.getMarca(), dto.getFabricante(),
         dto.getAltitudeMax(), dto.getDuracaoBateria(), dto.getCapacidadeKg(), dto.getCapacidadeM3(),
         StatusDroneEnum.ATIVO);
@@ -57,11 +64,17 @@ public class DroneService {
   /**
    * Listar.
    */
-  public List<Drone> listar() {
+  public List<DroneDto> listar() {
 
     try {
-      return droneRepository.findAll();
+      List<DroneDto> dronesDto = new ArrayList<DroneDto>();
+      List<Drone> drones = droneRepository.findAll();
 
+      drones.stream().forEach(drone -> {
+        dronesDto.add(converterDroneParaDroneDto(drone));
+      });
+
+      return dronesDto;
     } catch (Exception e) {
       throw new ErroInesperadoException();
     }
@@ -71,6 +84,7 @@ public class DroneService {
   /**
    * Deletar.
    */
+  @Transactional
   public void deletar(Long id) {
 
     try {
@@ -78,11 +92,22 @@ public class DroneService {
         throw new DroneNaoEncontradoException();
       }
 
+      Optional<Drone> drone = this.droneRepository.findById(id);
+
+      List<Pedido> pedidos = drone.get().getPedidos();
+
+      if (!pedidos.isEmpty()) {
+        throw new DronePossuiPedidosException();
+      }
+
       droneRepository.deleteById(id);
 
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
+      }
+      if (e instanceof DronePossuiPedidosException) {
+        throw (DronePossuiPedidosException) e;
       }
       throw new ErroInesperadoException();
     }
@@ -130,7 +155,8 @@ public class DroneService {
   /**
    * Ativar e Desativar o Drone.
    */
-  public void alterarStatus(Long id, StatusDroneEnum status) {
+  @Transactional
+  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
 
@@ -140,21 +166,37 @@ public class DroneService {
         throw new DroneNaoEncontradoException();
       }
 
+      if (status.equals(StatusDroneEnum.INATIVO)) {
+        List<Pedido> pedidosEmAberto = drone.get().getPedidos().stream()
+            .filter(p -> p.getStatus().equals(StatusPedidoEnum.AB)
+                || p.getStatus().equals(StatusPedidoEnum.EA)
+                || p.getStatus().equals(StatusPedidoEnum.AT))
+            .collect(Collectors.toList());
+
+        if (!pedidosEmAberto.isEmpty()) {
+          throw new PedidoEmAbertoException();
+        }
+
+      }
+
       drone.get().setStatus(status);
 
       this.droneRepository.save(drone.get());
 
+      return converterDroneParaDroneDto(drone.get());
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
+      }
+
+      if (e instanceof PedidoEmAbertoException) {
+        throw (PedidoEmAbertoException) e;
       }
 
       throw new ErroInesperadoException();
     }
 
   }
-
-
 
 }
 
