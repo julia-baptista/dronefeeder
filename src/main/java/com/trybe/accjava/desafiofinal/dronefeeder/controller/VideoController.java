@@ -6,6 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.VideoService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -52,7 +58,7 @@ public class VideoController {
   // https://www.youtube.com/watch?v=3ZUaE6Xh3qk
   @ApiOperation(value = "Operação responsável por cadastrar o video enviado pelo drone",
       notes = "Cadastrar o envio do video")
-  @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastado com sucesso"),
+  @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastrado com sucesso"),
       @ApiResponse(code = 401, message = "Não autorizado"),
       @ApiResponse(code = 404, message = "Pedido não encontrado"),
       @ApiResponse(code = 409, message = "Pedido já entregue"),
