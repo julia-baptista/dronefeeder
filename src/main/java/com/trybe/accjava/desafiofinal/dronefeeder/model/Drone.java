@@ -18,7 +18,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 public class Drone {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private String nome;

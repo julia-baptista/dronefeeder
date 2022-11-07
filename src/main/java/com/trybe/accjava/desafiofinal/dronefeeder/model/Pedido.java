@@ -20,7 +20,7 @@ import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 public class Pedido {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private LocalDateTime dataEntregaProgramada;
