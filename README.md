@@ -2,12 +2,27 @@
 
 ## Table of contents
 * [Setup e execução da aplicação](#setup-e-execução-da-aplicação)
+* [Tecnologias](#tecnologias)
 
 Link para o swagger
 http://localhost:8080/swagger-ui/#/
 
 
 ** https://www.baeldung.com/tag/swagger
+
+## Tecnologias
+Esta aplicação foi criada usando as seguintes tecnologias:
+
+1. Java 11
+2. Maven Dependency Management
+3. Spring Boot:
+
+    + Spring Web
+    + Spring Data JPA
+    + Actuator
+
+4. MySQL Database
+5. Docker
 
 ## Setup e execução da aplicação
 A aplicação pode ser facilmente configurada e executada com o comando:
