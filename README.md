@@ -1,7 +1,7 @@
 # DroneFeeder - O sistema de delivery da sua empresa!
 
 ## Table of contents
-* [Setup e execução da aplicação](#Setup e execução da aplicação)
+* [Setup e execução da aplicação](#setup-e-execução-da-aplicação)
 
 Link para o swagger
 http://localhost:8080/swagger-ui/#/
