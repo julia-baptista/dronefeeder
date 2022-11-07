@@ -6,17 +6,21 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
@@ -96,4 +100,47 @@ public class VideoController {
     return nomeArquivo.substring(i + 1);
   }
 
+  // Download de Arquivos:
+  // https://www.codejava.net/frameworks/spring-boot/file-download-upload-rest-api-examples
+  // https://www.youtube.com/watch?v=oynNU7D2w3Y
+  // https://dzone.com/articles/java-springboot-rest-api-to-uploaddownload-file-on
+  @ApiOperation(value = "Operação responsável por baixar o video de um pedido",
+      notes = "Baixar Video")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Video recuperado com sucesso"),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Pedido não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado")})
+  @GetMapping("/download/{idPedido}")
+  public ResponseEntity<?> downloadFile(@PathVariable("idPedido") Long idPedido,
+      HttpServletRequest request) {
+    // FileDownloadUtil downloadUtil = new FileDownloadUtil();
+
+    String nomeDoArquivo = "";
+    Resource resource = null;
+    try {
+      nomeDoArquivo = videoService.buscarNomeVideoDePedido(idPedido);
+      resource = videoService.download(nomeDoArquivo);
+    } catch (IOException e) {
+      return ResponseEntity.internalServerError().build();
+    }
+
+    if (resource == null) {
+      return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
+    }
+
+    String contentType = null;
+    try {
+      contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+    } catch (IOException ex) {
+      // logger.info("Could not determine file type.");
+    }
+    if (contentType == null) {
+      contentType = "application/octet-stream";
+    }
+
+    String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+
+    return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+        .header(HttpHeaders.CONTENT_DISPOSITION, headerValue).body(resource);
+  }
 }
