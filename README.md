@@ -2,13 +2,11 @@
 
 <h3>O sistema de delivery da sua empresa! </h3>
 
-    Este aplicativo permitirá a entrega de pacotes com drones.
-    Ele é responsável pelo serviço de Back-end da aplicação. Este serviço irá receber
-    e fornecer informações aos drones, receber informações do cadastrador
-    de pedidos, e fornecer algumas informações para o Front-end.
-    
-    
-    &nbsp;
+    Este aplicativo permitirá a entrega de pacotes com drones. Ele é
+    responsável pelo serviço de Back-end da aplicação. Este serviço irá
+    recebere fornecer informações aos drones, receber informações do
+    cadastrador de pedidos, e fornecer algumas informações para o Front-end.
+     
     O Front-end irá fornecer as informações dos pedidos tais como latitude
     e longitude e data e horário da entrega. Também permitirá a listagem de
     todos os videos das entregas bem como o download de vídeos relacionado a
@@ -69,8 +67,8 @@ docker-compose down --rmi all
     curl -X GET "http://localhost:8080/dronefeeder/v1/drone" -H "accept: application/json"
 
 <h3> Response body </h3>
-```
-[
+
+```[
   {
     "id": 1, 
     "nome": "Drone A7", 
