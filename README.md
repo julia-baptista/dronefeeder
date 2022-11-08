@@ -7,7 +7,6 @@
 Link para o swagger
 http://localhost:8080/swagger-ui/#/
 
-
 ** https://www.baeldung.com/tag/swagger
 
 ## Tecnologias
@@ -21,8 +20,10 @@ Esta aplicação foi criada usando as seguintes tecnologias:
     + Spring Data JPA
     + Actuator
 
-4. MySQL Database
-5. Docker
+4. Hibernate ORM
+5. MySQL Database
+6. JUnit
+7. Docker
 
 ## Setup e execução da aplicação
 A aplicação pode ser facilmente configurada e executada com o comando:
