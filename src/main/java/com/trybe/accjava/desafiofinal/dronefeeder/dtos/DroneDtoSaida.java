@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DroneDto {
+public class DroneDtoSaida {
 
   @ApiModelProperty(required = false,
       value = "Id do Drone. Cadastrado automaticamente ao cadastrar o drone no banco de dados",

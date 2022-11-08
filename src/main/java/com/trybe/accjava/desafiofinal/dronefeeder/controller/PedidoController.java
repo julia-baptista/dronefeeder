@@ -3,7 +3,8 @@ package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 import java.util.List;
 import javax.validation.Valid;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoEntrada;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
 import org.springframework.http.HttpStatus;
@@ -35,15 +36,15 @@ public class PedidoController {
   @ApiOperation(value = "Operação responsável por cadastrar um pedido", notes = "Cadastrar Pedido")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Pedido cadastrado com sucesso",
-          response = PedidoDto.class),
+          response = PedidoDtoSaida.class),
       @ApiResponse(code = 401, message = "Não autorizado"),
       @ApiResponse(code = 500, message = "Erro inesperado"),
       @ApiResponse(code = 404, message = "Drone não encontrado"),
       @ApiResponse(code = 409, message = "Peso e/ou volume excedido, Data/Hora indisponível")})
   @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<PedidoDto> cadastrarPedido(@RequestBody @Valid PedidoDto dto) {
-    log.info("Requisição para cadastrar o pedido recebida.");
-    PedidoDto novoPedido = pedidoService.cadastrar(dto);
+  public ResponseEntity<PedidoDtoSaida> cadastrarPedido(@RequestBody @Valid PedidoDtoEntrada dto) {
+    log.info("Requisição para cadastrar o pedido recebido.");
+    PedidoDtoSaida novoPedido = pedidoService.cadastrar(dto);
     log.info(String.format("Pedido id [%s] cadastrado com sucesso.", novoPedido.getId()));
     return ResponseEntity.ok(novoPedido);
   }
@@ -54,8 +55,8 @@ public class PedidoController {
           @ApiResponse(code = 401, message = "Não autorizado"),
           @ApiResponse(code = 500, message = "Erro inesperado")})
   @GetMapping(produces = {"application/json"})
-  public ResponseEntity<List<PedidoDto>> listarPedidos() {
-    List<PedidoDto> lista = pedidoService.listar();
+  public ResponseEntity<List<PedidoDtoSaida>> listarPedidos() {
+    List<PedidoDtoSaida> lista = pedidoService.listar();
     return ResponseEntity.ok(lista);
   }
 
@@ -66,8 +67,8 @@ public class PedidoController {
       @ApiResponse(code = 401, message = "Não autorizado"),
       @ApiResponse(code = 500, message = "Erro inesperado")})
   @GetMapping(value = "/drone/{id}", produces = {"application/json"})
-  public ResponseEntity<List<PedidoDto>> listarPedidosPorDrone(@PathVariable("id") Long id) {
-    List<PedidoDto> lista = pedidoService.listarPorDrone(id);
+  public ResponseEntity<List<PedidoDtoSaida>> listarPedidosPorDrone(@PathVariable("id") Long id) {
+    List<PedidoDtoSaida> lista = pedidoService.listarPorDrone(id);
     return ResponseEntity.ok(lista);
   }
 
@@ -91,9 +92,9 @@ public class PedidoController {
           message = "Peso e/ou volume excedido, Data/Hora indisponível, Pedido cancelado, em andamento ou entregue, DroneInativo,")})
 
   @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<PedidoDto> alterarPedido(@PathVariable("id") Long id,
-      @RequestBody @Valid PedidoDto dto) {
-    PedidoDto pedido = this.pedidoService.alterar(id, dto);
+  public ResponseEntity<PedidoDtoSaida> alterarPedido(@PathVariable("id") Long id,
+      @RequestBody @Valid PedidoDtoEntrada dto) {
+    PedidoDtoSaida pedido = this.pedidoService.alterar(id, dto);
     return ResponseEntity.ok(pedido);
   }
 
@@ -116,9 +117,9 @@ public class PedidoController {
       @ApiResponse(code = 500, message = "Erro inesperado")})
   @PutMapping(value = "/atualizacoordenadas", consumes = {"application/json"},
       produces = {"application/json"})
-  public ResponseEntity<PedidoDto> atualizarCoordenadas(
+  public ResponseEntity<PedidoDtoSaida> atualizarCoordenadas(
       @RequestBody @Valid AtualizaCoordenadaPedidoDto dto) {
-    PedidoDto pedidoAlterado = this.pedidoService.atualizarCoordenadas(dto);
+    PedidoDtoSaida pedidoAlterado = this.pedidoService.atualizarCoordenadas(dto);
     return ResponseEntity.ok(pedidoAlterado);
   }
 }
