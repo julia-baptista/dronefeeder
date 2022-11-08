@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoEntrada;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneInativoException;
@@ -47,7 +48,7 @@ public class PedidoService {
   // Usar transactional para solucionar erro: failed to lazily initialize a collection of role:
   // https://stackoverflow.com/questions/11746499/how-to-solve-the-failed-to-lazily-initialize-a-collection-of-role-hibernate-ex
   @Transactional
-  public PedidoDto cadastrar(PedidoDto dto) {
+  public PedidoDtoSaida cadastrar(PedidoDtoEntrada dto) {
 
     try {
 
@@ -86,12 +87,13 @@ public class PedidoService {
 
 
       Pedido novoPedido =
-          converterPedidoDtoParaPedido(dto, dataEntregaProgramada, dataProgramadaDaSaida);
+          converterPedidoDtoEntradaParaPedido(dto, dataEntregaProgramada, dataProgramadaDaSaida);
+
       novoPedido.setDrone(drone.get());
 
       Pedido pedidoCadastrado = this.pedidoRepository.save(novoPedido);
 
-      return converterPedidoParaPedidoDto(pedidoCadastrado);
+      return converterPedidoParaPedidoDtoSaida(pedidoCadastrado);
     } catch (Exception e) {
       log.error(String.format("Erro ao cadastrar o pedido. ErrorMessage: [%s]", e.getMessage()), e);
       if (e instanceof DroneNaoEncontradoException) {
@@ -119,19 +121,18 @@ public class PedidoService {
   }
 
 
-  private Pedido converterPedidoDtoParaPedido(PedidoDto dto, LocalDateTime dataEntregaProgramada,
-      LocalDateTime dataProgramadaDaSaida) {
-    Pedido pedido = new Pedido(dataEntregaProgramada, dto.getDuracaoDoPercurso(),
-        dataProgramadaDaSaida, DataUtil.converteStringParaData(dto.getDataConfirmacaoEntrega()),
-        dto.getEnderecoDeEntrega(), StatusPedidoEnum.AB, dto.getDescricaoPedido(),
-        dto.getValorDoPedido(), dto.getPesoKg(), dto.getVolumeM3(), dto.getLatitude(),
-        dto.getLongitude(), null);
+  private Pedido converterPedidoDtoEntradaParaPedido(PedidoDtoEntrada dto,
+      LocalDateTime dataEntregaProgramada, LocalDateTime dataProgramadaDaSaida) {
+    Pedido pedido =
+        new Pedido(dataEntregaProgramada, dto.getDuracaoDoPercurso(), dataProgramadaDaSaida, null,
+            dto.getEnderecoDeEntrega(), StatusPedidoEnum.AB, dto.getDescricaoPedido(),
+            dto.getValorDoPedido(), dto.getPesoKg(), dto.getVolumeM3(), null, null, null);
     return pedido;
   }
 
 
-  private PedidoDto converterPedidoParaPedidoDto(Pedido pedido) {
-    return PedidoDto.builder().id(pedido.getId())
+  private PedidoDtoSaida converterPedidoParaPedidoDtoSaida(Pedido pedido) {
+    return PedidoDtoSaida.builder().id(pedido.getId())
         .dataEntregaProgramada(DataUtil.converteDataParaString(pedido.getDataEntregaProgramada()))
         .duracaoDoPercurso(pedido.getDuracaoDoPercurso())
         .dataProgramadaDaSaida(DataUtil.converteDataParaString(pedido.getDataProgramadaDaSaida()))
@@ -148,12 +149,12 @@ public class PedidoService {
   /**
    * Listar.
    */
-  public List<PedidoDto> listar() {
+  public List<PedidoDtoSaida> listar() {
     try {
-      List<PedidoDto> pedidosDto = new ArrayList<PedidoDto>();
+      List<PedidoDtoSaida> pedidosDto = new ArrayList<PedidoDtoSaida>();
       List<Pedido> pedidos = pedidoRepository.findAll();
       pedidos.stream().forEach(pedido -> {
-        pedidosDto.add(converterPedidoParaPedidoDto(pedido));
+        pedidosDto.add(converterPedidoParaPedidoDtoSaida(pedido));
       });
       return pedidosDto;
     } catch (Exception e) {
@@ -164,13 +165,13 @@ public class PedidoService {
   /**
    * Listar pedidos por Drone.
    */
-  public List<PedidoDto> listarPorDrone(Long droneId) {
+  public List<PedidoDtoSaida> listarPorDrone(Long droneId) {
     try {
-      List<PedidoDto> pedidosDto = new ArrayList<PedidoDto>();
+      List<PedidoDtoSaida> pedidosDto = new ArrayList<PedidoDtoSaida>();
       List<Pedido> pedidos = pedidoRepository.findAll().stream()
           .filter(p -> p.getDrone().getId().equals(droneId)).collect(Collectors.toList());
       pedidos.stream().forEach(pedido -> {
-        pedidosDto.add(converterPedidoParaPedidoDto(pedido));
+        pedidosDto.add(converterPedidoParaPedidoDtoSaida(pedido));
       });
       return pedidosDto;
     } catch (Exception e) {
@@ -205,7 +206,7 @@ public class PedidoService {
    * Alterar o Pedido.
    */
   @Transactional
-  public PedidoDto alterar(Long id, PedidoDto dto) {
+  public PedidoDtoSaida alterar(Long id, PedidoDtoEntrada dto) {
     try {
 
       Optional<Pedido> pedido = this.pedidoRepository.findById(id);
@@ -257,14 +258,14 @@ public class PedidoService {
       }
 
       Pedido novoPedido =
-          converterPedidoDtoParaPedido(dto, dataEntregaProgramada, dataProgramadaDaSaida);
+          converterPedidoDtoEntradaParaPedido(dto, dataEntregaProgramada, dataProgramadaDaSaida);
       novoPedido.setDrone(drone.get());
 
       novoPedido.setId(id);
 
       Pedido pedidoCadastrado = this.pedidoRepository.save(novoPedido);
 
-      return converterPedidoParaPedidoDto(pedidoCadastrado);
+      return converterPedidoParaPedidoDtoSaida(pedidoCadastrado);
 
 
     } catch (Exception e) {
@@ -334,7 +335,7 @@ public class PedidoService {
   /**
    * Alterar Latitude.
    */
-  public PedidoDto atualizarCoordenadas(AtualizaCoordenadaPedidoDto dto) {
+  public PedidoDtoSaida atualizarCoordenadas(AtualizaCoordenadaPedidoDto dto) {
 
     try {
 
@@ -353,7 +354,7 @@ public class PedidoService {
 
       this.pedidoRepository.save(pedido.get());
 
-      return converterPedidoParaPedidoDto(pedido.get());
+      return converterPedidoParaPedidoDtoSaida(pedido.get());
 
     } catch (Exception e) {
       if (e instanceof PedidoNaoEncontradoException) {
