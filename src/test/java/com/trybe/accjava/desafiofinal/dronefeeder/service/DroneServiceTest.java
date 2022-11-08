@@ -14,11 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 public class DroneServiceTest {
 
-  @Mock
+  @MockBean
   private DroneRepository repository;
 
   @InjectMocks
