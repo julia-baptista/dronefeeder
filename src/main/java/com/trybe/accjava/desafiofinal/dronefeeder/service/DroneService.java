@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
@@ -31,14 +32,14 @@ public class DroneService {
   /**
    * Cadastrar.
    */
-  public DroneDto cadastrar(DroneDto dto) {
+  public DroneDtoSaida cadastrar(DroneDtoEntrada dto) {
 
     try {
       if (this.droneRepository.existsByNome(dto.getNome())) {
         throw new DroneExistenteException();
       }
-      Drone drone = this.droneRepository.save(converterDroneDtoParaDrone(dto));
-      return converterDroneParaDroneDto(drone);
+      Drone drone = this.droneRepository.save(converterDroneDtoEntradaParaDrone(dto));
+      return converterDroneParaDroneDtoSaida(drone);
     } catch (Exception e) {
       if (e instanceof DroneExistenteException) {
         throw (DroneExistenteException) e;
@@ -47,15 +48,15 @@ public class DroneService {
     }
   }
 
-  public Drone converterDroneDtoParaDrone(DroneDto dto) {
+  public Drone converterDroneDtoEntradaParaDrone(DroneDtoEntrada dto) {
     Drone drone = new Drone(dto.getNome(), dto.getMarca(), dto.getFabricante(),
         dto.getAltitudeMax(), dto.getDuracaoBateria(), dto.getCapacidadeKg(), dto.getCapacidadeM3(),
         StatusDroneEnum.ATIVO);
     return drone;
   }
 
-  private DroneDto converterDroneParaDroneDto(Drone drone) {
-    return DroneDto.builder().id(drone.getId()).nome(drone.getNome()).marca(drone.getMarca())
+  private DroneDtoSaida converterDroneParaDroneDtoSaida(Drone drone) {
+    return DroneDtoSaida.builder().id(drone.getId()).nome(drone.getNome()).marca(drone.getMarca())
         .fabricante(drone.getFabricante()).altitudeMax(drone.getAltitudeMax())
         .duracaoBateria(drone.getDuracaoBateria()).capacidadeKg(drone.getCapacidadeKg())
         .capacidadeM3(drone.getCapacidadeM3()).status(drone.getStatus().getStatus()).build();
@@ -64,14 +65,14 @@ public class DroneService {
   /**
    * Listar.
    */
-  public List<DroneDto> listar() {
+  public List<DroneDtoSaida> listar() {
 
     try {
-      List<DroneDto> dronesDto = new ArrayList<DroneDto>();
+      List<DroneDtoSaida> dronesDto = new ArrayList<DroneDtoSaida>();
       List<Drone> drones = droneRepository.findAll();
 
       drones.stream().forEach(drone -> {
-        dronesDto.add(converterDroneParaDroneDto(drone));
+        dronesDto.add(converterDroneParaDroneDtoSaida(drone));
       });
 
       return dronesDto;
@@ -117,7 +118,7 @@ public class DroneService {
   /**
    * Alterar o Drone.
    */
-  public DroneDto alterar(Long id, DroneDto dto) {
+  public DroneDtoSaida alterar(Long id, DroneDtoEntrada dto) {
     try {
 
       Optional<Drone> drone = this.droneRepository.findById(id);
@@ -133,12 +134,12 @@ public class DroneService {
         }
       }
 
-      Drone droneParaAlterar = converterDroneDtoParaDrone(dto);
+      Drone droneParaAlterar = converterDroneDtoEntradaParaDrone(dto);
       droneParaAlterar.setId(id);
       droneParaAlterar.setStatus(drone.get().getStatus());
       this.droneRepository.save(droneParaAlterar);
 
-      return converterDroneParaDroneDto(droneParaAlterar);
+      return converterDroneParaDroneDtoSaida(droneParaAlterar);
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;
@@ -156,7 +157,7 @@ public class DroneService {
    * Ativar e Desativar o Drone.
    */
   @Transactional
-  public DroneDto alterarStatus(Long id, StatusDroneEnum status) {
+  public DroneDtoSaida alterarStatus(Long id, StatusDroneEnum status) {
 
     try {
 
@@ -183,7 +184,7 @@ public class DroneService {
 
       this.droneRepository.save(drone.get());
 
-      return converterDroneParaDroneDto(drone.get());
+      return converterDroneParaDroneDtoSaida(drone.get());
     } catch (Exception e) {
       if (e instanceof DroneNaoEncontradoException) {
         throw (DroneNaoEncontradoException) e;

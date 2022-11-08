@@ -2,7 +2,8 @@ package com.trybe.accjava.desafiofinal.dronefeeder.controller;
 
 import java.util.List;
 import javax.validation.Valid;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
 import org.springframework.http.HttpStatus;
@@ -37,13 +38,13 @@ public class DroneController {
   @ApiOperation(value = "Operação responsável por cadastrar um drone", notes = "Cadastrar Drone")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Pedido cadastrado com sucesso",
-          response = DroneDto.class),
+          response = DroneDtoSaida.class),
       @ApiResponse(code = 401, message = "Não autorizado"),
       @ApiResponse(code = 500, message = "Erro inesperado"),
       @ApiResponse(code = 409, message = "Drone existente")})
   @PostMapping(consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<DroneDto> cadastrarDrone(@RequestBody @Valid DroneDto dto) {
-    DroneDto novoDrone = service.cadastrar(dto);
+  public ResponseEntity<DroneDtoSaida> cadastrarDrone(@RequestBody @Valid DroneDtoEntrada dto) {
+    DroneDtoSaida novoDrone = service.cadastrar(dto);
     return ResponseEntity.ok(novoDrone);
   }
 
@@ -53,8 +54,8 @@ public class DroneController {
           @ApiResponse(code = 401, message = "Não autorizado"),
           @ApiResponse(code = 500, message = "Erro inesperado")})
   @GetMapping(produces = {"application/json"})
-  public ResponseEntity<List<DroneDto>> listarDrones() {
-    List<DroneDto> lista = service.listar();
+  public ResponseEntity<List<DroneDtoSaida>> listarDrones() {
+    List<DroneDtoSaida> lista = service.listar();
     return ResponseEntity.ok(lista);
   }
 
@@ -76,18 +77,17 @@ public class DroneController {
   // https://www.baeldung.com/spring-boot-bean-validation
   @ApiOperation(value = "Operação responsável por alterar dados de um drone",
       notes = "Alterar Drone")
-  @ApiResponses(
-      value = {
-          @ApiResponse(code = 200, message = "Drone alterado com sucesso",
-              response = DroneDto.class),
-          @ApiResponse(code = 401, message = "Não autorizado"),
-          @ApiResponse(code = 404, message = "Drone não encontrado"),
-          @ApiResponse(code = 500, message = "Erro inesperado"),
-          @ApiResponse(code = 409, message = "Drone existente")})
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Drone alterado com sucesso",
+          response = DroneDtoSaida.class),
+      @ApiResponse(code = 401, message = "Não autorizado"),
+      @ApiResponse(code = 404, message = "Drone não encontrado"),
+      @ApiResponse(code = 500, message = "Erro inesperado"),
+      @ApiResponse(code = 409, message = "Drone existente")})
   @PutMapping(value = "/{id}", consumes = {"application/json"}, produces = {"application/json"})
-  public ResponseEntity<DroneDto> alterarDrone(@PathVariable("id") Long id,
-      @RequestBody @Valid DroneDto dto) {
-    DroneDto drone = this.service.alterar(id, dto);
+  public ResponseEntity<DroneDtoSaida> alterarDrone(@PathVariable("id") Long id,
+      @RequestBody @Valid DroneDtoEntrada dto) {
+    DroneDtoSaida drone = this.service.alterar(id, dto);
     return ResponseEntity.ok(drone);
   }
 
