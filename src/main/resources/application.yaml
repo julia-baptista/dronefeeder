@@ -4,9 +4,12 @@ server:
   servlet.context-path: /dronefeeder
 spring:
     datasource:
-        username: ${DB_USER}
-        password: ${DB_PASSWORD}
-        url: jdbc:mysql://${DB_HOST}/${DB_NAME}
+        #username: ${DB_USER}
+        #password: ${DB_PASSWORD}
+        #url: jdbc:mysql://${DB_HOST}/${DB_NAME}
+        username: trybe
+        password: 12345678
+        url: jdbc:mysql://localhost:3306/dronefeeder
     jpa:
         hibernate:
             ddl-auto: update
@@ -36,4 +39,5 @@ resilience4j.circuitbreaker:
     #estudantes:
       #baseConfig: default
 app:
-  path.arquivos: /Users/jossanymoura/desktop
+  #path.arquivos: /Users/jossanymoura/desktop
+  path.arquivos: /home/samsung/Documentos/pedidos/upload/

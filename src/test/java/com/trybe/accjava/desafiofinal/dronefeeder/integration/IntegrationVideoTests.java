@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigDecimal;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.PedidoRepository;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.VideoRepository;
@@ -53,21 +53,21 @@ public class IntegrationVideoTests {
   @SpyBean
   private DroneRepository droneRepository;
 
-  DroneDto newDroneDto = new DroneDto();
+  DroneDtoSaida newDroneDto = new DroneDtoSaida();
 
-  PedidoDto newPedidoDto = new PedidoDto();
+  PedidoDtoSaida newPedidoDto = new PedidoDtoSaida();
 
   @BeforeEach
   public void setup() {
     droneRepository.deleteAll();
     pedidoRepository.deleteAll();
     videoRepository.deleteAll();
-    newDroneDto = new DroneDto();
-    newPedidoDto = new PedidoDto();
-    newDroneDto = DroneDto.builder().nome("Drone 01").marca("Drone&Cia").fabricante("Drone&Cia")
+    newDroneDto = new DroneDtoSaida();
+    newPedidoDto = new PedidoDtoSaida();
+    newDroneDto = DroneDtoSaida.builder().nome("Drone 01").marca("Drone&Cia").fabricante("Drone&Cia")
         .altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00).capacidadeM3(10.00).build();
-    DroneDto droneDtoRetorno = droneService.cadastrar(newDroneDto);
-    newPedidoDto = PedidoDto.builder().dataEntregaProgramada("10/11/2022 10:00")
+    DroneDtoSaida droneDtoRetorno = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDtoSaida.builder().dataEntregaProgramada("10/11/2022 10:00")
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(droneDtoRetorno.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -79,7 +79,7 @@ public class IntegrationVideoTests {
   @DisplayName("1 - Deve falhar ao salvar um vídeo para um pedido inexistente.")
   void shouldFailSalvarVideoParaPedidoInexistente() throws Exception {
 
-    PedidoDto pedidoDtoRetorno = pedidoService.cadastrar(newPedidoDto);
+    PedidoDtoSaida pedidoDtoRetorno = pedidoService.cadastrar(newPedidoDto);
     Long pedidoIdErrado = pedidoDtoRetorno.getId() + 1;
     String pedidoIdErradoString = pedidoIdErrado.toString();
 
@@ -100,7 +100,7 @@ public class IntegrationVideoTests {
   @DisplayName("2 - Deve salvar um Video no banco de dados.")
   void shouldSalvarVideoNoBanco() throws Exception {
 
-    PedidoDto pedidoDtoRetorno = pedidoService.cadastrar(newPedidoDto);
+    PedidoDtoSaida pedidoDtoRetorno = pedidoService.cadastrar(newPedidoDto);
     String pedidoIdString = pedidoDtoRetorno.getId().toString();
 
     MockMultipartFile fileTest = new MockMultipartFile("file", "test-file.txt", "text/plain",
