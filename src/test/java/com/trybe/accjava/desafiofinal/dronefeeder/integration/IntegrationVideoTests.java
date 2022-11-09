@@ -1,12 +1,10 @@
-
-
 package com.trybe.accjava.desafiofinal.dronefeeder.integration;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigDecimal;
+
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoEntrada;
@@ -31,27 +29,20 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class IntegrationVideoTests {
-
   @Autowired
   private MockMvc mockMvc;
-
   @Autowired
   private DroneService droneService;
-
   @Autowired
   private PedidoService pedidoService;
-
   @SpyBean
   private VideoRepository videoRepository;
-
   @SpyBean
   private PedidoRepository pedidoRepository;
-
   @SpyBean
   private DroneRepository droneRepository;
 
@@ -64,19 +55,16 @@ public class IntegrationVideoTests {
     droneRepository.deleteAll();
     pedidoRepository.deleteAll();
     videoRepository.deleteAll();
-
     newDroneDto = new DroneDtoEntrada();
     newPedidoDto = new PedidoDtoEntrada();
     newDroneDto = DroneDtoEntrada.builder().nome("Drone 01").marca("Drone&Cia").fabricante("Drone&Cia")
-        .altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00).capacidadeM3(10.00).build();
+            .altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00).capacidadeM3(10.00).build();
     DroneDtoSaida droneDtoRetorno = droneService.cadastrar(newDroneDto);
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
-
-        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
-        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
-        .droneId(droneDtoRetorno.getId()).pesoKg(4.00).volumeM3(1.00).build();
+            .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+            .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+            .droneId(droneDtoRetorno.getId()).pesoKg(4.00).volumeM3(1.00).build();
   }
-
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(1)
@@ -88,16 +76,14 @@ public class IntegrationVideoTests {
     String pedidoIdErradoString = pedidoIdErrado.toString();
 
     MockMultipartFile fileTest = new MockMultipartFile("file", "test-file.txt", "text/plain",
-        "Teste Integração Upload Vídeo".getBytes());
-
+            "Teste Integração Upload Vídeo".getBytes());
     mockMvc
-        .perform(MockMvcRequestBuilders.multipart("/v1/video/upload").file(fileTest)
-            .param("pedidoId", pedidoIdErradoString).param("latitude", "200")
-            .param("longitude", "200"))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
+            .perform(MockMvcRequestBuilders.multipart("/v1/video/upload").file(fileTest)
+                    .param("pedidoId", pedidoIdErradoString).param("latitude", "200")
+                    .param("longitude", "200"))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.error").value("Pedido não encontrado"));
   }
-
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(2)
@@ -108,21 +94,18 @@ public class IntegrationVideoTests {
     String pedidoIdString = pedidoDtoRetorno.getId().toString();
 
     MockMultipartFile fileTest = new MockMultipartFile("file", "test-file.txt", "text/plain",
-        "Teste Integração Upload Vídeo".getBytes());
-
+            "Teste Integração Upload Vídeo".getBytes());
     mockMvc
-        .perform(MockMvcRequestBuilders.multipart("/v1/video/upload").file(fileTest)
-            .param("pedidoId", pedidoIdString).param("latitude", "200").param("longitude", "200"))
-        .andExpect(status().isAccepted());
+            .perform(MockMvcRequestBuilders.multipart("/v1/video/upload").file(fileTest)
+                    .param("pedidoId", pedidoIdString).param("latitude", "200").param("longitude", "200"))
+            .andExpect(status().isOk());
   }
-
   @WithMockUser(username = "dronefeeder")
   @Test
   @Order(3)
   @DisplayName("3 - Deve listar os Videos do banco de dados.")
   void shouldListarVideosDoBanco() throws Exception {
-
     mockMvc.perform(get("/v1/video").contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
   }
 }

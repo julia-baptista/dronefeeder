@@ -58,7 +58,6 @@ class IntegrationDroneTests {
   @DisplayName("1 - Deve cadastrar um novo Drone na base de dados.")
   void cadastrarDroneTest() throws Exception {
 
-    DroneDtoSaida newDroneDto = DroneDtoSaida.builder().nome("Drone 01").marca("Drone&Cia")
     DroneDtoEntrada newDroneDto = DroneDtoEntrada.builder().nome("Drone 01").marca("Drone&Cia")
         .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
@@ -190,10 +189,6 @@ class IntegrationDroneTests {
     droneRepository.save(newDrone1);
     droneRepository.save(newDrone2);
 
-    DroneDtoSaida droneUpdatedDto1 = DroneDtoSaida.builder().nome("Drone 02").marca("Drones&Drones")
-        .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
-        .capacidadeM3(10.00).build();
-    DroneDtoSaida droneUpdatedDto2 = DroneDtoSaida.builder().nome("Drone 01").marca("Drones&Drones")
     DroneDtoEntrada droneUpdatedDto1 = DroneDtoEntrada.builder().nome("Drone 02").marca("Drones&Drones")
         .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
