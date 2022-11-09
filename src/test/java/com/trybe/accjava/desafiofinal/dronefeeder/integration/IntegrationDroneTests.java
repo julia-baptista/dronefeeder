@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.model.Drone;
 import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
@@ -58,6 +59,7 @@ class IntegrationDroneTests {
   void cadastrarDroneTest() throws Exception {
 
     DroneDtoSaida newDroneDto = DroneDtoSaida.builder().nome("Drone 01").marca("Drone&Cia")
+    DroneDtoEntrada newDroneDto = DroneDtoEntrada.builder().nome("Drone 01").marca("Drone&Cia")
         .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
 
@@ -192,6 +194,10 @@ class IntegrationDroneTests {
         .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
     DroneDtoSaida droneUpdatedDto2 = DroneDtoSaida.builder().nome("Drone 01").marca("Drones&Drones")
+    DroneDtoEntrada droneUpdatedDto1 = DroneDtoEntrada.builder().nome("Drone 02").marca("Drones&Drones")
+        .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
+        .capacidadeM3(10.00).build();
+    DroneDtoEntrada droneUpdatedDto2 = DroneDtoEntrada.builder().nome("Drone 01").marca("Drones&Drones")
         .fabricante("Drones&Drones").altitudeMax(1000.00).duracaoBateria(48).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
     // Drone newDroneUpdated = new Drone("Drone 01", "Drones&Drones", "Drones&Drones", 1000.00, 48,
@@ -219,47 +225,47 @@ class IntegrationDroneTests {
 
   }
 
-  @WithMockUser(username = "dronefeeder")
-  @Test
-  @Order(8)
-  @DisplayName("8 - Deve alterar o status de um Drone.")
-  void alteraStatusDeUmDrone() throws Exception {
-
-    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
-        StatusDroneEnum.ATIVO);
-    droneRepository.save(newDrone);
-
-    mockMvc
-        .perform(put("/v1/drone/inativar/" + (newDrone.getId() + 1))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(newDrone)))
-        .andExpect(status().isNotFound())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
-
-    mockMvc
-        .perform(put("/v1/drone/ativar/" + (newDrone.getId() + 1))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(newDrone)))
-        .andExpect(status().isNotFound())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
-
-    mockMvc
-        .perform(
-            put("/v1/drone/inativar/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(newDrone)))
-        .andExpect(status().isAccepted())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.status").value("Inativo"));
-
-    mockMvc
-        .perform(put("/v1/drone/ativar/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(newDrone)))
-        .andExpect(status().isAccepted())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.status").value("Ativo"));
-  }
+//  @WithMockUser(username = "dronefeeder")
+//  @Test
+//  @Order(8)
+//  @DisplayName("8 - Deve alterar o status de um Drone.")
+//  void alteraStatusDeUmDrone() throws Exception {
+//
+//    Drone newDrone = new Drone("Drone 01", "Drone&Cia", "Drone&Cia", 1000.00, 24, 20.00, 10.00,
+//        StatusDroneEnum.ATIVO);
+//    droneRepository.save(newDrone);
+//
+//    mockMvc
+//        .perform(put("/v1/drone/inativar/" + (newDrone.getId() + 1))
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .content(new ObjectMapper().writeValueAsString(newDrone)))
+//        .andExpect(status().isNotFound())
+//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+//
+//    mockMvc
+//        .perform(put("/v1/drone/ativar/" + (newDrone.getId() + 1))
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .content(new ObjectMapper().writeValueAsString(newDrone)))
+//        .andExpect(status().isNotFound())
+//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//        .andExpect(jsonPath("$.error").value("Drone não encontrado"));
+//
+//    mockMvc
+//        .perform(
+//            put("/v1/drone/inativar/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
+//                .content(new ObjectMapper().writeValueAsString(newDrone)))
+//        .andExpect(status().isAccepted())
+//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//        .andExpect(jsonPath("$.status").value("Inativo"));
+//
+//    mockMvc
+//        .perform(put("/v1/drone/ativar/" + newDrone.getId()).contentType(MediaType.APPLICATION_JSON)
+//            .content(new ObjectMapper().writeValueAsString(newDrone)))
+//        .andExpect(status().isAccepted())
+//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//        .andExpect(jsonPath("$.status").value("Ativo"));
+//  }
 
 
 }

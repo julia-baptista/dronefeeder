@@ -1,6 +1,7 @@
 package com.trybe.accjava.desafiofinal.dronefeeder.service;
 
 import static org.mockito.Mockito.times;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
 import com.trybe.accjava.desafiofinal.dronefeeder.exception.DroneExistenteException;
@@ -24,13 +25,13 @@ public class DroneServiceTest {
   @InjectMocks
   private DroneService service;
 
-  DroneDtoSaida dto = new DroneDtoSaida();
+  DroneDtoEntrada dto = new DroneDtoEntrada();
 
   Drone drone = new Drone();
 
   @BeforeEach
   public void setup() {
-    dto = DroneDtoSaida.builder().id(1L).nome("Drone A").fabricante("Drone Technology").build();
+    dto = DroneDtoEntrada.builder().nome("Drone A").fabricante("Drone Technology").build();
 
     drone.setId(1L);
     drone.setNome("Drone A");
