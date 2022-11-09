@@ -23,15 +23,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.VideoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -56,6 +52,8 @@ public class VideoController {
   // Upload de arquivos:
   // https://github.com/feltex/upload-arquivos-api
   // https://www.youtube.com/watch?v=3ZUaE6Xh3qk
+  // Try using @RequestPart
+  // https://stackoverflow.com/questions/31420146/multipart-file-upload-using-springfox-and-swagger-ui
   @ApiOperation(value = "Operação responsável por cadastrar o video enviado pelo drone",
       notes = "Cadastrar o envio do video")
   @ApiResponses(value = {@ApiResponse(code = 202, message = "Video cadastrado com sucesso"),
@@ -63,8 +61,9 @@ public class VideoController {
       @ApiResponse(code = 404, message = "Pedido não encontrado"),
       @ApiResponse(code = 409, message = "Pedido já entregue"),
       @ApiResponse(code = 500, message = "Erro inesperado e/ou Erro ao carregar o video")})
-  @PostMapping("/upload")
-  public ResponseEntity<Void> salvarArquivo(@RequestParam("file") MultipartFile file,
+  @RequestMapping(path = "/upload", method = RequestMethod.POST,
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<Void> salvarArquivo(@RequestPart("file") MultipartFile file,
       @RequestParam("pedidoId") Long pedidoId, @RequestParam("latitude") Integer latitude,
       @RequestParam("longitude") Integer longitude) {
     log.info("Recebendo o arquivo: ", file.getOriginalFilename());
