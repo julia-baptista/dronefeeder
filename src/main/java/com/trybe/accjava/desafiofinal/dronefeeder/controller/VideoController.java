@@ -6,12 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
-import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
-import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
-import com.trybe.accjava.desafiofinal.dronefeeder.service.VideoService;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -21,13 +15,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.VideoResponseDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.exception.CarregarVideoEntregaException;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Video;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.VideoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -61,9 +61,10 @@ public class VideoController {
       @ApiResponse(code = 404, message = "Pedido não encontrado"),
       @ApiResponse(code = 409, message = "Pedido já entregue"),
       @ApiResponse(code = 500, message = "Erro inesperado e/ou Erro ao carregar o video")})
+  // @ApiResponse(code = 200, message = "OK", response = Any::class)
   @RequestMapping(path = "/upload", method = RequestMethod.POST,
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<Void> salvarArquivo(@RequestPart("file") MultipartFile file,
+  public ResponseEntity<VideoResponseDto> salvarArquivo(@RequestPart("file") MultipartFile file,
       @RequestParam("pedidoId") Long pedidoId, @RequestParam("latitude") Integer latitude,
       @RequestParam("longitude") Integer longitude) {
     log.info("Recebendo o arquivo: ", file.getOriginalFilename());
@@ -83,8 +84,8 @@ public class VideoController {
       log.error("Erro ao processar arquivo", e);
       throw new CarregarVideoEntregaException();
     }
-    this.videoService.salvar(dto.getPedidoId(), nomeArquivo);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(null);
+    VideoResponseDto novoVideo = this.videoService.salvar(dto.getPedidoId(), nomeArquivo);
+    return ResponseEntity.ok(novoVideo);
   }
 
   @ApiOperation(value = "Operação responsável por listar os videos enviados pelos drones",

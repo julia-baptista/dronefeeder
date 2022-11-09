@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigDecimal;
-
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoEntrada;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
 import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoEntrada;
@@ -65,12 +64,14 @@ public class IntegrationVideoTests {
     droneRepository.deleteAll();
     pedidoRepository.deleteAll();
     videoRepository.deleteAll();
+
     newDroneDto = new DroneDtoEntrada();
     newPedidoDto = new PedidoDtoEntrada();
     newDroneDto = DroneDtoEntrada.builder().nome("Drone 01").marca("Drone&Cia").fabricante("Drone&Cia")
         .altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00).capacidadeM3(10.00).build();
     DroneDtoSaida droneDtoRetorno = droneService.cadastrar(newDroneDto);
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(droneDtoRetorno.getId()).pesoKg(4.00).volumeM3(1.00).build();

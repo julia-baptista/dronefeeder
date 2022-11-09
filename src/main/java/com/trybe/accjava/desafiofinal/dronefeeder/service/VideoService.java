@@ -43,7 +43,7 @@ public class VideoService {
    * Cadastrar.
    */
   @Transactional
-  public void salvar(Long idPedido, String nomeDoArquivo) {
+  public VideoResponseDto salvar(Long idPedido, String nomeDoArquivo) {
     try {
       Optional<Pedido> pedido = pedidoRepository.findById(idPedido);
       if (!pedido.isPresent()) {
@@ -55,6 +55,7 @@ public class VideoService {
       video.setPedido(pedido.get());
       Video novoVideo = this.videoRepository.save(video);
       pedido.get().setVideo(novoVideo);
+      return converterVideoParavideoDto(novoVideo);
     } catch (Exception e) {
       log.error("Error ao salvar o video da entrega", e);
       if (e instanceof PedidoNaoEncontradoException) {

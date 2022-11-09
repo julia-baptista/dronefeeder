@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +34,17 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.AtualizaCoordenadaPedidoDto;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.DroneDtoSaida;
+import com.trybe.accjava.desafiofinal.dronefeeder.dtos.PedidoDtoSaida;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusDroneEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.enums.StatusPedidoEnum;
+import com.trybe.accjava.desafiofinal.dronefeeder.model.Pedido;
+import com.trybe.accjava.desafiofinal.dronefeeder.repository.DroneRepository;
+import com.trybe.accjava.desafiofinal.dronefeeder.repository.PedidoRepository;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.DroneService;
+import com.trybe.accjava.desafiofinal.dronefeeder.service.PedidoService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,11 +63,15 @@ public class IntegrationPedidoTests {
   @SpyBean
   private PedidoRepository pedidoRepository;
 
+  @MockBean
+  private PedidoRepository pedidoRepositoryMocked;
+
   @SpyBean
   private DroneRepository droneRepository;
 
   @Captor
   private ArgumentCaptor<Pedido> pedidoCaptor;
+
 
   DroneDtoEntrada newDroneDto = new DroneDtoEntrada();
 
@@ -79,6 +95,7 @@ public class IntegrationPedidoTests {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId() + 1).pesoKg(4.00).volumeM3(1.00).build();
@@ -300,8 +317,8 @@ public class IntegrationPedidoTests {
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
 
     PedidoDtoSaida pedidoDto = pedidoService.cadastrar(newPedidoDto);
-
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -321,7 +338,9 @@ public class IntegrationPedidoTests {
   void shoulfFailAlterarPedidoStatusCancelado() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
@@ -330,7 +349,9 @@ public class IntegrationPedidoTests {
 
     pedidoService.alterarStatus(pedidoDto.getId(), StatusPedidoEnum.CA);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -350,7 +371,9 @@ public class IntegrationPedidoTests {
   void shoulfFailAlterarPedidoStatusEmAndamento() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
@@ -359,7 +382,9 @@ public class IntegrationPedidoTests {
 
     pedidoService.alterarStatus(pedidoDto.getId(), StatusPedidoEnum.EA);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -379,7 +404,9 @@ public class IntegrationPedidoTests {
   void shoulfFailAlterarPedidoStatusEntregue() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
@@ -388,7 +415,9 @@ public class IntegrationPedidoTests {
 
     pedidoService.alterarStatus(pedidoDto.getId(), StatusPedidoEnum.EN);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -407,13 +436,17 @@ public class IntegrationPedidoTests {
   @DisplayName("15 - Deve falhar ao alterar um pedido colocando um drone que está inativo.")
   void shouldFailAlterarPedidoParaDroneInativo() throws Exception {
 
+
     DroneDtoEntrada newDroneDto2 = DroneDtoEntrada.builder().nome("Drone 02").marca("Drone&Cia")
+
         .fabricante("Drone&Cia").altitudeMax(1000.00).duracaoBateria(24).capacidadeKg(20.00)
         .capacidadeM3(10.00).build();
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
     DroneDtoSaida result2 = droneService.cadastrar(newDroneDto2);
 
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
@@ -423,6 +456,7 @@ public class IntegrationPedidoTests {
     droneService.alterarStatus(result2.getId(), StatusDroneEnum.INATIVO);
 
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Nintendo Switch Oled 32gb").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result2.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -442,14 +476,18 @@ public class IntegrationPedidoTests {
   void shouldFailAlterarPesoPedidoMaiorDoQuePesoDroneTransporta() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
 
     PedidoDtoSaida pedidoDto = pedidoService.cadastrar(newPedidoDto);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Televisão Samsung").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(22.00).volumeM3(1.00).build();
@@ -469,14 +507,18 @@ public class IntegrationPedidoTests {
   void shouldFailAlterarVolumeCubicoMaiorDoQuePesoDroneTransporta() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(10.00).volumeM3(1.00).build();
 
     PedidoDtoSaida pedidoDto = pedidoService.cadastrar(newPedidoDto);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 364")
         .descricaoPedido("Televisão Samsung").valorDoPedido(new BigDecimal(2599.00))
         .droneId(result.getId()).pesoKg(19.00).volumeM3(11.00).build();
@@ -496,21 +538,27 @@ public class IntegrationPedidoTests {
   void shouldFailAlterarHorarioPedidoQueSobreponhaHorarioOutroPedido() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
 
     PedidoDtoSaida pedidoDto = pedidoService.cadastrar(newPedidoDto);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 09:30")
+
         .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Xbox Series X").valorDoPedido(new BigDecimal(4499.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
 
     pedidoService.cadastrar(newPedidoDto2);
 
+
     PedidoDtoEntrada newPedidoDto3 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 09:30")
+
         .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("PlayStation 5").valorDoPedido(new BigDecimal(4499.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -530,14 +578,18 @@ public class IntegrationPedidoTests {
   void shouldAlterarUmPedidoComSucesso() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
 
     PedidoDtoSaida pedidoDto = pedidoService.cadastrar(newPedidoDto);
 
+
     PedidoDtoEntrada newPedidoDto2 = PedidoDtoEntrada.builder().dataEntregaProgramada("11/11/2022 09:30")
+
         .duracaoDoPercurso((long) 30).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Xbox Series X").valorDoPedido(new BigDecimal(4499.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -556,7 +608,9 @@ public class IntegrationPedidoTests {
   void shouldFailCancelarPedidoNaoEncontradoNoBanco() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -575,7 +629,9 @@ public class IntegrationPedidoTests {
   void shouldFailAlterarStatusPedidoNaoEncontradoNoBanco() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -593,7 +649,9 @@ public class IntegrationPedidoTests {
   void shouldFailAtualizarCoordenadasPedidoNaoEncontradoNoBanco() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -618,7 +676,9 @@ public class IntegrationPedidoTests {
   void shouldAtualizarCoordenadasPedido() throws Exception {
 
     DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+
     newPedidoDto = PedidoDtoEntrada.builder().dataEntregaProgramada("10/11/2022 10:00")
+
         .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
         .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
         .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
@@ -635,6 +695,26 @@ public class IntegrationPedidoTests {
         .andExpect(jsonPath("$.latitude").value(atualizacaoCoordenadasPedidoDto.getLatitude()));
   }
 
+  @WithMockUser(username = "dronefeeder")
+  @Test
+  @Order(24)
+  @DisplayName("24 - Deve falhar com erro inesperado ao cadastrar um pedido de um drone.")
+  void shouldFailErroInesperadoAoCadastrarPedidoDrone() throws Exception {
+    Mockito.when(pedidoRepositoryMocked.save(Mockito.any()))
+        .thenThrow(new IllegalArgumentException());
+    DroneDtoSaida result = droneService.cadastrar(newDroneDto);
+    newPedidoDto = PedidoDtoSaida.builder().dataEntregaProgramada("10/11/2022 10:00")
+        .duracaoDoPercurso((long) 60).enderecoDeEntrega("Avenida Rui Barbosa 506")
+        .descricaoPedido("Nintendo Switch 32gb").valorDoPedido(new BigDecimal(2299.00))
+        .droneId(result.getId()).pesoKg(4.00).volumeM3(1.00).build();
+
+    mockMvc
+        .perform(post("/v1/pedido").contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsString(newPedidoDto)))
+        .andExpect(status().isInternalServerError())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Erro inesperado"));
+  }
 
 
 }
