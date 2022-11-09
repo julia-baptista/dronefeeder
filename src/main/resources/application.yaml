@@ -41,4 +41,4 @@ resilience4j.circuitbreaker:
       #baseConfig: default
 app:
 #  path.arquivos: /Users/jossanymoura/desktop
-  path.arquivos: /app
+  path.arquivos: .

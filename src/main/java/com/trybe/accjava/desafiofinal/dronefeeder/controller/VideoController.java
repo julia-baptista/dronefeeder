@@ -125,6 +125,7 @@ public class VideoController {
     Resource resource = null;
     try {
       nomeDoArquivo = videoService.buscarNomeVideoDePedido(idPedido);
+      System.out.println(nomeDoArquivo);
       resource = videoService.download(nomeDoArquivo);
     } catch (IOException e) {
       return ResponseEntity.internalServerError().build();
