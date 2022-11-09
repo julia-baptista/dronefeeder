@@ -7,6 +7,9 @@ spring:
         username: root
         password: M0urinh4
         url: jdbc:mysql://localhost:3306/dronefeeder
+#        username: ${DB_USER}
+#        password: ${DB_PASSWORD}
+#        url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     jpa:
         hibernate:
             ddl-auto: update
