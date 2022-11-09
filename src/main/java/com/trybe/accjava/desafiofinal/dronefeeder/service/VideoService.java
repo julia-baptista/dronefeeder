@@ -99,7 +99,7 @@ public class VideoService {
         throw new PedidoNaoEncontradoException();
       }
 
-      return pedido.get().getVideo().getNomeArquivo();
+      return "." + pedido.get().getVideo().getNomeArquivo();
 
     } catch (Exception e) {
       log.error("Erro ao buscar o nome do arquivo do pedido", e);
@@ -115,8 +115,10 @@ public class VideoService {
    */
   public Resource download(String nomeDoArquivo) throws IOException {
     Path dirPath = Paths.get(pathArquivos);
+    System.out.println(dirPath);
 
     Files.list(dirPath).forEach(file -> {
+      System.out.println(file);
       if (file.getFileName().toString().startsWith(nomeDoArquivo)) {
         arquivoEncontrado = file;
         return;
