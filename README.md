@@ -53,12 +53,12 @@ Se você precisar parar e removar todos containers, networks e todas imagens usa
 docker-compose down --rmi all
 ```
 &nbsp;
-## Relacionamento das Tabelas.
+## Relacionamento das Tabelas
 
 ![plot](./tabelas.png)
 
 &nbsp;
-## A API REST para este aplicativo está descrita abaixo.
+## A API REST para este aplicativo está descrita abaixo
 
 ### * Drone-controller
 
@@ -72,6 +72,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```[
+[
   {
     "id": 1, 
     "nome": "Drone A7", 
@@ -98,6 +99,7 @@ docker-compose down --rmi all
 <h3>Parameters</h3>
 
 ```{
+{
   "altitudeMax": 4000,
   "capacidadeKg": 20,
   "capacidadeM3": 10,
@@ -111,6 +113,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
+{
   "id": 5,
   "nome": "Drone DJI Mini 2",
   "marca": "Mini 2",
@@ -133,6 +136,7 @@ docker-compose down --rmi all
 <h3>Parameters</h3>
 
 ```{
+{
   "altitudeMax": 5000,
   "capacidadeKg": 20,
   "capacidadeM3": 10,
@@ -146,6 +150,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
+{
   "id": 5,
   "nome": "Drone DJI Mini 2",
   "marca": "Mini 2",
@@ -234,7 +239,8 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```[
-    {
+[
+  {
     "id": 6,
     "dataEntregaProgramada": "20/11/2022 12:00",
     "duracaoDoPercurso": 60,
@@ -264,6 +270,7 @@ docker-compose down --rmi all
  <h3>Parameters</h3>
  
  ```{
+{
   "dataEntregaProgramada": "20/11/2022 12:00",
   "descricaoPedido": "Jogo de pratos",
   "droneId": 2,
@@ -278,6 +285,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
+{
   "id": 6,
   "dataEntregaProgramada": "20/11/2022 12:00",
   "duracaoDoPercurso": 60,
@@ -306,6 +314,7 @@ docker-compose down --rmi all
  <h3>Parameters</h3>
  
  ```{
+{
   "dataEntregaProgramada": "20/11/2022 12:00",
   "descricaoPedido": "Jogo de pratos",
   "droneId": 5,
@@ -320,6 +329,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
+{
   "id": 6,
   "dataEntregaProgramada": "20/11/2022 12:00",
   "duracaoDoPercurso": 60,
@@ -368,6 +378,7 @@ docker-compose down --rmi all
  <h3>Parameters</h3>
  
  ```{
+{
   "latitude": 190,
   "longitude": 300,
   "pedidoId": 2
@@ -377,6 +388,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
+{
   "id": 2,
   "dataEntregaProgramada": "05/11/2022 10:00",
   "duracaoDoPercurso": 3,
@@ -426,6 +438,7 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```[
+[
 	  {
 	    "id": 7,
 	    "dataEntregaProgramada": "20/11/2022 12:00",
@@ -458,7 +471,8 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```[
-    
+[
+ {   
     "id": 2,
     "nomeArquivo": "918c4141-def7-43b7-8708-d2ea6bbd8ada.mp4",
     "pedidoId": 5
@@ -489,6 +503,7 @@ docker-compose down --rmi all
  <h3>Parameters</h3>
  
  ```{
+{
   "latitude": 190,
   "longitude": 300,
   "pedidoId": 2
