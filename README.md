@@ -52,7 +52,10 @@ Se você precisar parar e removar todos containers, networks e todas imagens usa
 ```bash
 docker-compose down --rmi all
 ```
+&nbsp;
+## Relacionamento das Tabelas.
 
+![plot](./tabelas.png)
 
 &nbsp;
 ## A API REST para este aplicativo está descrita abaixo.
@@ -259,6 +262,7 @@ docker-compose down --rmi all
     curl -X POST "http://localhost:8080/dronefeeder/v1/pedido" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"dataEntregaProgramada\": \"20/11/2022 12:00\", \"descricaoPedido\": \"Jogo de pratos\", \"droneId\": 2, \"duracaoDoPercurso\": 60, \"enderecoDeEntrega\": \"Avenida Campeche, 100\", \"pesoKg\": 5, \"valorDoPedido\": 1000.99, \"volumeM3\": 5}"
     
  <h3>Parameters</h3>
+ 
  ```{
   "dataEntregaProgramada": "20/11/2022 12:00",
   "descricaoPedido": "Jogo de pratos",
@@ -300,6 +304,7 @@ docker-compose down --rmi all
     curl -X PUT "http://localhost:8080/dronefeeder/v1/pedido/6" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"dataEntregaProgramada\": \"20/11/2022 12:00\", \"descricaoPedido\": \"Jogo de pratos\", \"droneId\": 4, \"duracaoDoPercurso\": 60, \"enderecoDeEntrega\": \"Avenida Campeche, 100\", \"pesoKg\": 5, \"valorDoPedido\": 1000.99, \"volumeM3\": 5}"
     
  <h3>Parameters</h3>
+ 
  ```{
   "dataEntregaProgramada": "20/11/2022 12:00",
   "descricaoPedido": "Jogo de pratos",
@@ -361,6 +366,7 @@ docker-compose down --rmi all
     curl -X PUT "http://localhost:8080/dronefeeder/v1/pedido/atualizacoordenadas" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"latitude\": 190, \"longitude\": 300, \"pedidoId\": 2}"
     
  <h3>Parameters</h3>
+ 
  ```{
   "latitude": 190,
   "longitude": 300,
@@ -473,7 +479,7 @@ docker-compose down --rmi all
 	[Download file]
 	
 
-<h4> 3. Operação responsável cadastrar o video enviado pelo drone. <h4>
+<h4> 3. Operação responsável por cadastrar o video enviado pelo drone. <h4>
 <h3>Request</h3>
 
 `PUT /dronefeeder/v1/pedido/atualizacoordenadas`
@@ -481,6 +487,7 @@ docker-compose down --rmi all
     curl -X PUT "http://localhost:8080/dronefeeder/v1/pedido/atualizacoordenadas" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"latitude\": 190, \"longitude\": 300, \"pedidoId\": 2}"
     
  <h3>Parameters</h3>
+ 
  ```{
   "latitude": 190,
   "longitude": 300,
@@ -491,21 +498,11 @@ docker-compose down --rmi all
 <h3> Response body </h3>
 
 ```{
-  "id": 2,
-  "dataEntregaProgramada": "05/11/2022 10:00",
-  "duracaoDoPercurso": 3,
-  "dataProgramadaDaSaida": "05/11/2022 09:57",
-  "dataConfirmacaoEntrega": "",
-  "enderecoDeEntrega": "Rua São João",
-  "status": "em andamento",
-  "descricaoPedido": "caixa de bombons",
-  "valorDoPedido": 100,
-  "droneId": 2,
-  "pesoKg": 10,
-  "volumeM3": 5,
-  "latitude": 190,
-  "longitude": 300
-}
+ {
+  "id": 1,
+  "nomeArquivo": "6ee6da22-200e-445a-97be-2a51b6f0faf6.mp4",
+  "pedidoId": 1
+ }
 ```
     
 ## Link para o swagger
